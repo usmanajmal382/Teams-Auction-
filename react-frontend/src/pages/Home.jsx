@@ -193,6 +193,42 @@ export default function Home() {
                 )}
             </div>
 
+            {/* DEVELOPER CREDIT */}
+            <div style={{
+                marginTop: '1rem',
+                padding: '2rem',
+                borderTop: '1px solid rgba(244, 160, 28, 0.15)',
+                textAlign: 'center',
+            }}>
+                <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    background: 'rgba(244, 160, 28, 0.06)',
+                    border: '1px solid rgba(244, 160, 28, 0.2)',
+                    borderRadius: '50px',
+                    padding: '0.6rem 1.5rem',
+                }}>
+                    <span style={{ fontSize: '1rem' }}>⚡</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                        Designed &amp; Developed by
+                    </span>
+                    <span style={{
+                        color: '#F4A01C',
+                        fontWeight: '700',
+                        fontSize: '0.95rem',
+                        fontFamily: 'Outfit',
+                        letterSpacing: '0.5px',
+                    }}>
+                        Usman Ajmal
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.75rem' }}>|</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                        PCL Auction Platform © 2026
+                    </span>
+                </div>
+            </div>
+
         </div>
     );
 }

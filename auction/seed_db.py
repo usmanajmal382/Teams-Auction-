@@ -40,22 +40,29 @@ def seed():
 
     # Create players
     players = [
-        models.Player(name="Virat Kohli", role="Batsman", base_price=1000, nationality="Indian", previous_team_id=None),
-        models.Player(name="MS Dhoni", role="Wicket-Keeper", base_price=1000, nationality="Indian", previous_team_id=None),
-        models.Player(name="Rohit Sharma", role="Batsman", base_price=1000, nationality="Indian", previous_team_id=None),
-        models.Player(name="Jasprit Bumrah", role="Bowler", base_price=1000, nationality="Indian", previous_team_id=None),
-        models.Player(name="Rashid Khan", role="Bowler", base_price=1000, nationality="Afghan", previous_team_id=None),
-        models.Player(name="Ben Stokes", role="All-Rounder", base_price=1000, nationality="English", previous_team_id=None),
-        models.Player(name="Glenn Maxwell", role="All-Rounder", base_price=1000, nationality="Australian", previous_team_id=None),
-        models.Player(name="Trent Boult", role="Bowler", base_price=1000, nationality="New Zealander", previous_team_id=None),
+        models.Player(name="Sharjeel Abbas",     role="Batsman",       base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Shahid Baby",         role="All-Rounder",   base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Hamza Dhol",          role="Bowler",        base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Rizwan Ahmed Bajwa",  role="Wicket-Keeper", base_price=1000, nationality="Pakistani", previous_team_id=None),
     ]
-    # Generate 42 mock players
-    for i in range(1, 43):
+    # Generate remaining players
+    extra_names = [
+        "Usman Tariq", "Ali Raza", "Bilal Hassan", "Kamran Akmal Jr", "Fahad Mirza",
+        "Saad Butt", "Junaid Alam", "Imran Butt", "Zubair Khan", "Asad Mehmood",
+        "Sohail Akhtar", "Noman Ali", "Haris Rauf", "Shadab Jr", "Amir Yousuf",
+        "Danish Aziz", "Fawad Alam Jr", "Sarfraz Jr", "Babar Khan", "Aamir Sohail Jr",
+        "Kashif Daud", "Tauseef Ahmed", "Waqar Jr", "Misbah Jr", "Yasir Ali",
+        "Mukhtar Ahmed", "Khurram Manzoor Jr", "Saeed Ajmal Jr", "Umar Akmal Jr", "Shoaib Jr",
+        "Tabish Khan", "Iftikhar Jr", "Haider Ali Jr", "Abdullah Shafique Jr", "Salman Agha Jr",
+        "Faheem Ashraf Jr", "Mohammad Wasim Jr", "Naseem Jr", "Shaheen Jr", "Hasan Ali Jr",
+        "Zaman Khan", "Ihsanullah",
+    ]
+    for name in extra_names:
         players.append(models.Player(
-            name=f"Mock Player {i}",
+            name=name,
             role="All-Rounder",
             base_price=1000,
-            nationality="Unknown",
+            nationality="Pakistani",
             previous_team_id=None
         ))
 

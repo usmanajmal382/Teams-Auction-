@@ -40,10 +40,11 @@ def seed():
 
     # Create players
     players = [
-        models.Player(name="Sharjeel Abbas",     role="Batsman",       base_price=1000, nationality="Pakistani", previous_team_id=None),
-        models.Player(name="Shahid Baby",         role="All-Rounder",   base_price=1000, nationality="Pakistani", previous_team_id=None),
-        models.Player(name="Hamza Dhol",          role="Bowler",        base_price=1000, nationality="Pakistani", previous_team_id=None),
-        models.Player(name="Rizwan Ahmed Bajwa",  role="Wicket-Keeper", base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Sharjeel Abbas", role="Batsman",       base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Shahid Baby",    role="All-Rounder",   base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Hamza Dhol",     role="Bowler",        base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Rizwan",         role="Wicket-Keeper", base_price=1000, nationality="Pakistani", previous_team_id=None),
+        models.Player(name="Ahmed Bajwa",    role="All-Rounder",   base_price=1000, nationality="Pakistani", previous_team_id=None),
     ]
     # Generate remaining players
     extra_names = [

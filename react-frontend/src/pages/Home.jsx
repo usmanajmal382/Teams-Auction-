@@ -132,12 +132,94 @@ export default function Home() {
             </div>
 
 
+
+            {/* 5 JULY AUCTION BANNER — auto-hides after 6 July */}
+            {(() => {
+                const now = new Date();
+                const hideAfter = new Date('2026-07-06T00:00:00');
+                if (now >= hideAfter) return null;
+                const auctionDate = new Date('2026-07-05T00:00:00');
+                const diffMs = auctionDate - now;
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                return (
+                    <div style={{
+                        position: 'relative',
+                        background: 'linear-gradient(135deg, rgba(244,160,28,0.15) 0%, rgba(255,100,0,0.1) 50%, rgba(244,160,28,0.15) 100%)',
+                        border: '2px solid rgba(244,160,28,0.5)',
+                        borderRadius: '20px',
+                        padding: '2rem',
+                        textAlign: 'center',
+                        overflow: 'hidden',
+                        marginTop: '1rem',
+                    }}>
+                        {/* Shimmer effect */}
+                        <style>{`
+                            @keyframes shimmer {
+                                0% { transform: translateX(-100%); }
+                                100% { transform: translateX(200%); }
+                            }
+                            @keyframes pulse-glow {
+                                0%, 100% { box-shadow: 0 0 20px rgba(244,160,28,0.3); }
+                                50% { box-shadow: 0 0 40px rgba(244,160,28,0.7), 0 0 80px rgba(244,160,28,0.3); }
+                            }
+                            .auction-banner { animation: pulse-glow 2s ease-in-out infinite; }
+                            .shimmer-line {
+                                position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+                                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+                                animation: shimmer 2.5s infinite;
+                            }
+                        `}</style>
+                        <div className="shimmer-line" />
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🏏</div>
+                        <div style={{
+                            fontSize: '1.8rem', fontWeight: '900', fontFamily: 'Outfit',
+                            background: 'linear-gradient(to right, #F4A01C, #FF6B00, #F4A01C)',
+                            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                            letterSpacing: '1px', marginBottom: '0.5rem',
+                        }}>
+                            PCL AUCTION 2026
+                        </div>
+                        <div style={{ fontSize: '1.1rem', color: 'white', fontWeight: '600', marginBottom: '0.5rem' }}>
+                            📅 Sunday, 5th July 2026
+                        </div>
+                        <div style={{
+                            display: 'inline-block',
+                            background: diffDays <= 1 ? 'rgba(239,68,68,0.2)' : 'rgba(244,160,28,0.15)',
+                            border: `1px solid ${diffDays <= 1 ? 'rgba(239,68,68,0.5)' : 'rgba(244,160,28,0.4)'}`,
+                            borderRadius: '50px', padding: '0.4rem 1.2rem',
+                            fontSize: '0.9rem', color: diffDays <= 1 ? '#ff6b6b' : '#F4A01C',
+                            fontWeight: '700', marginTop: '0.5rem',
+                        }}>
+                            {diffDays <= 0 ? '🔴 LIVE TODAY!' : diffDays === 1 ? '⚡ TOMORROW!' : `⏳ ${diffDays} days to go`}
+                        </div>
+                        <div style={{ marginTop: '0.75rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+                            Organized by <strong style={{ color: '#F4A01C' }}>Umer Haddi</strong> — CEO, GTCC
+                        </div>
+                    </div>
+                );
+            })()}
+
             {/* SEASON ARCHIVE */}
             <div style={{ marginTop: '2rem' }}>
                 <h2 style={{ fontFamily: 'Outfit', color: '#F4A01C', marginBottom: '1.5rem' }}>
-                    <span style={{ marginRight: '0.5rem' }}>🏆</span> Season History & Archive
+                    <span style={{ marginRight: '0.5rem' }}>🏆</span> Season History &amp; Archive
                 </h2>
+                <style>{`
+                    @keyframes cardGlow {
+                        0%, 100% { box-shadow: 0 4px 20px rgba(244,160,28,0.05); }
+                        50% { box-shadow: 0 8px 35px rgba(244,160,28,0.2); }
+                    }
+                    @keyframes trophySpin {
+                        0% { transform: rotate(-10deg) scale(1); }
+                        50% { transform: rotate(10deg) scale(1.15); }
+                        100% { transform: rotate(-10deg) scale(1); }
+                    }
+                    .archive-card { animation: cardGlow 3s ease-in-out infinite; transition: transform 0.3s; }
+                    .archive-card:hover { transform: translateY(-6px) scale(1.02); }
+                    .trophy-icon { display: inline-block; animation: trophySpin 2.5s ease-in-out infinite; }
+                `}</style>
                 <div className="grid-3">
+                    {/* Season 2026 Active */}
                     <div className="card" style={{ borderLeft: '4px solid var(--primary)' }}>
                         <h4 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '0.5rem' }}>Season 2026 (Active)</h4>
                         <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>The current season is underway. Follow teams and bid statuses live.</p>
@@ -146,22 +228,42 @@ export default function Home() {
                             <div><strong>Players Drafted:</strong> {soldPlayers.length}</div>
                         </div>
                     </div>
-                    <div className="card">
-                        <h4 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '0.5rem' }}>Season 2025 (Archive)</h4>
-                        <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>A thrilling campaign dominated by the Sargodha Thunders.</p>
-                        <div style={{ fontSize: '0.85rem' }}>
-                            <div><strong>Champion:</strong> Sargodha Thunders</div>
-                            <div><strong>Top Purchase:</strong> Babar Azam (₹18,000)</div>
-                            <div><strong>Total Spend:</strong> ₹8,40,000</div>
+
+                    {/* Season 2025 — animated */}
+                    <div className="card archive-card" style={{
+                        borderLeft: '4px solid #F4A01C',
+                        background: 'linear-gradient(135deg, rgba(16,29,48,0.95), rgba(244,160,28,0.08))',
+                        position: 'relative', overflow: 'hidden',
+                    }}>
+                        <div style={{ position: 'absolute', top: '10px', right: '14px', fontSize: '2rem' }}>
+                            <span className="trophy-icon">🏆</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '2px', color: '#F4A01C', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Season Archive</div>
+                        <h4 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '0.3rem' }}>Season 2025</h4>
+                        <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>A thrilling campaign dominated by the Sargodha Thunders.</p>
+                        <div style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '1.1rem' }}>👑</span>
+                            <span style={{ color: 'var(--text-muted)' }}>Champions:</span>
+                            <strong style={{ color: '#F4A01C', fontFamily: 'Outfit' }}>Sargodha Thunders</strong>
                         </div>
                     </div>
-                    <div className="card">
-                        <h4 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '0.5rem' }}>Season 2024 (Archive)</h4>
-                        <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>The inaugural PCL season with high-intensity bidding wars.</p>
-                        <div style={{ fontSize: '0.85rem' }}>
-                            <div><strong>Champion:</strong> Karachi Kings</div>
-                            <div><strong>Top Purchase:</strong> Shaheen Afridi (₹16,500)</div>
-                            <div><strong>Total Spend:</strong> ₹7,90,000</div>
+
+                    {/* Season 2024 — animated */}
+                    <div className="card archive-card" style={{
+                        borderLeft: '4px solid rgba(244,160,28,0.6)',
+                        background: 'linear-gradient(135deg, rgba(16,29,48,0.95), rgba(244,160,28,0.05))',
+                        position: 'relative', overflow: 'hidden',
+                    }}>
+                        <div style={{ position: 'absolute', top: '10px', right: '14px', fontSize: '2rem' }}>
+                            <span className="trophy-icon" style={{ animationDelay: '1s' }}>🥇</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '2px', color: 'rgba(244,160,28,0.7)', marginBottom: '0.3rem', textTransform: 'uppercase' }}>Inaugural Season</div>
+                        <h4 style={{ fontSize: '1.25rem', color: 'white', marginBottom: '0.3rem' }}>Season 2024</h4>
+                        <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>The inaugural PCL season with high-intensity bidding wars.</p>
+                        <div style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ fontSize: '1.1rem' }}>👑</span>
+                            <span style={{ color: 'var(--text-muted)' }}>Champions:</span>
+                            <strong style={{ color: '#F4A01C', fontFamily: 'Outfit' }}>Jauharabad Buber Sher</strong>
                         </div>
                     </div>
                 </div>

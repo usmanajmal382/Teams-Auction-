@@ -109,7 +109,7 @@ export default function Home() {
                         PCL CRICKET<br />AUCTION ARENA
                     </h1>
                     <p className="text-muted" style={{ fontSize: '1.25rem', marginTop: '1rem', lineHeight: '1.6' }}>
-                        Welcome to the official Pakistan Cricket League Auction Portal. Real-time bidding room, franchise squad tracker, and budget management.
+                        Welcome to the official Punjab Cricket League Auction Portal. Real-time bidding room, franchise squad tracker, and budget management.
                     </p>
                     <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
                         {user ? (
@@ -248,38 +248,49 @@ export default function Home() {
             </div>
 
             {/* DEVELOPER CREDIT */}
+            {/* CREDITS */}
             <div style={{
                 marginTop: '1rem',
-                padding: '2rem',
+                padding: '2.5rem 1rem',
                 borderTop: '1px solid rgba(244, 160, 28, 0.15)',
                 textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '1rem',
             }}>
+                {/* CEO Credit */}
                 <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '0.75rem',
-                    background: 'rgba(244, 160, 28, 0.06)',
-                    border: '1px solid rgba(244, 160, 28, 0.2)',
+                    background: 'linear-gradient(135deg, rgba(244,160,28,0.1), rgba(255,255,255,0.03))',
+                    border: '1px solid rgba(244,160,28,0.25)',
                     borderRadius: '50px',
-                    padding: '0.6rem 1.5rem',
+                    padding: '0.7rem 1.8rem',
                 }}>
-                    <span style={{ fontSize: '1rem' }}>⚡</span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                        Designed &amp; Developed by
-                    </span>
-                    <span style={{
-                        color: '#F4A01C',
-                        fontWeight: '700',
-                        fontSize: '0.95rem',
-                        fontFamily: 'Outfit',
-                        letterSpacing: '0.5px',
-                    }}>
-                        Usman Ajmal
-                    </span>
-                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.75rem' }}>|</span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                        PCL Auction Platform © 2026
-                    </span>
+                    <span style={{ fontSize: '1.1rem' }}>🏛️</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Organized by</span>
+                    <span style={{ color: '#F4A01C', fontWeight: '700', fontSize: '0.95rem', fontFamily: 'Outfit' }}>Umer Haddi</span>
+                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.75rem' }}>—</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontStyle: 'italic' }}>CEO, GTCC</span>
+                </div>
+
+                {/* Developer Credit */}
+                <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    background: 'rgba(244, 160, 28, 0.04)',
+                    border: '1px solid rgba(244, 160, 28, 0.15)',
+                    borderRadius: '50px',
+                    padding: '0.5rem 1.5rem',
+                }}>
+                    <span style={{ fontSize: '0.9rem' }}>⚡</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Designed &amp; Developed by</span>
+                    <span style={{ color: '#F4A01C', fontWeight: '700', fontSize: '0.9rem', fontFamily: 'Outfit' }}>Usman Ajmal</span>
+                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.7rem' }}>|</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>PCL Auction Platform © 2026</span>
                 </div>
             </div>
 

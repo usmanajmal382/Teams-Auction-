@@ -8,6 +8,49 @@ import os
 # Create DB tables
 models.Base.metadata.create_all(bind=database.engine)
 
+def auto_seed():
+    """Auto-create admin + teams if DB is empty (first deploy)."""
+    db = database.SessionLocal()
+    try:
+        existing = db.query(models.User).first()
+        if existing:
+            return  # Already seeded, skip
+
+        from passlib.context import CryptContext
+        pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+        # Create 8 teams
+        team_names = [
+            ("Sargodha Thunders",    "Owner 1"),
+            ("Jauharabad Buber Sher","Owner 2"),
+            ("Khushab Punjabians",   "Owner 3"),
+            ("Sialkot Janbaz",       "Owner 4"),
+            ("Bhakkar Wolves",       "Owner 5"),
+            ("Faisalabad Stallions", "Owner 6"),
+            ("Mianwali Royals",      "Owner 7"),
+            ("Naushera Gladiators",  "Owner 8"),
+        ]
+        for name, owner in team_names:
+            db.add(models.Team(name=name, owner_name=owner, total_budget=110000))
+        db.commit()
+
+        # Create admin user
+        admin = models.User(
+            username="admin",
+            password_hash=pwd.hash("admin"),
+            role="admin"
+        )
+        db.add(admin)
+        db.commit()
+        print("✅ Auto-seed complete: admin user and 8 teams created.")
+    except Exception as e:
+        print(f"⚠️ Auto-seed failed: {e}")
+    finally:
+        db.close()
+
+auto_seed()
+
+
 app = FastAPI(title="PCL Auction Real-time")
 
 # CORS — allow all origins (frontend is on Vercel)

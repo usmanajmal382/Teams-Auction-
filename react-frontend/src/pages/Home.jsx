@@ -49,58 +49,57 @@ export default function Home() {
     return (
         <div className="container animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', paddingBottom: '5rem', position: 'relative' }}>
 
-            {/* CRICKET FLOATING BACKGROUND ANIMATION — visible to non-logged-in viewers */}
+            {/* CRICKET FLOATING BACKGROUND ANIMATION */}
             {!user && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                    pointerEvents: 'none', zIndex: 0, overflow: 'hidden',
-                }}>
+                <>
                     <style>{`
-                        @keyframes floatUp {
-                            0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
-                            10%  { opacity: 0.6; }
-                            90%  { opacity: 0.4; }
-                            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+                        @keyframes cricketFloat {
+                            0%   { top: 105vh; opacity: 0;   transform: rotate(0deg) scale(0.8); }
+                            5%   { opacity: 0.7; }
+                            50%  { opacity: 0.5; transform: rotate(180deg) scale(1.1); }
+                            95%  { opacity: 0.3; }
+                            100% { top: -80px;  opacity: 0;   transform: rotate(360deg) scale(0.8); }
                         }
-                        @keyframes sway {
-                            0%, 100% { margin-left: 0; }
-                            50%       { margin-left: 40px; }
+                        @keyframes cricketSway {
+                            0%, 100% { margin-left: 0px; }
+                            25%      { margin-left: 30px; }
+                            75%      { margin-left: -20px; }
                         }
-                        .cricket-icon {
-                            position: absolute;
-                            bottom: -80px;
-                            font-size: 2rem;
-                            animation: floatUp linear infinite, sway ease-in-out infinite;
-                            filter: drop-shadow(0 0 6px rgba(244,160,28,0.4));
+                        .ci {
+                            position: fixed;
+                            pointer-events: none;
+                            z-index: 0;
+                            animation: cricketFloat linear infinite, cricketSway ease-in-out infinite;
+                            filter: drop-shadow(0 0 8px rgba(244,160,28,0.5));
                         }
                     `}</style>
-
                     {[
-                        { icon: '🏏', left: '5%',  dur: '9s',  delay: '0s',   size: '2.2rem' },
-                        { icon: '🏟️', left: '15%', dur: '12s', delay: '2s',   size: '1.8rem' },
-                        { icon: '🏆', left: '25%', dur: '10s', delay: '4s',   size: '2rem'   },
-                        { icon: '🏏', left: '35%', dur: '14s', delay: '1s',   size: '1.6rem' },
-                        { icon: '⚡', left: '45%', dur: '8s',  delay: '3s',   size: '1.5rem' },
-                        { icon: '🎯', left: '55%', dur: '11s', delay: '5s',   size: '2rem'   },
-                        { icon: '🏏', left: '65%', dur: '13s', delay: '0.5s', size: '2.4rem' },
-                        { icon: '🏆', left: '75%', dur: '9s',  delay: '6s',   size: '1.7rem' },
-                        { icon: '🏟️', left: '82%', dur: '15s', delay: '2.5s', size: '2rem'   },
-                        { icon: '⭐', left: '90%', dur: '10s', delay: '4.5s', size: '1.6rem' },
-                        { icon: '🏏', left: '10%', dur: '16s', delay: '7s',   size: '1.9rem' },
-                        { icon: '🎽', left: '50%', dur: '12s', delay: '8s',   size: '2.1rem' },
-                        { icon: '🏆', left: '70%', dur: '11s', delay: '1.5s', size: '1.5rem' },
-                        { icon: '🏏', left: '30%', dur: '13s', delay: '9s',   size: '2.3rem' },
+                        { icon: '🏏', left: '5%',  dur: 9,  delay: 0,   size: '2.2rem' },
+                        { icon: '🏟️', left: '15%', dur: 12, delay: 2,   size: '1.8rem' },
+                        { icon: '🏆', left: '25%', dur: 10, delay: 4,   size: '2rem'   },
+                        { icon: '🏏', left: '35%', dur: 14, delay: 1,   size: '1.6rem' },
+                        { icon: '⚡', left: '45%', dur: 8,  delay: 3,   size: '1.5rem' },
+                        { icon: '🎯', left: '55%', dur: 11, delay: 5,   size: '2rem'   },
+                        { icon: '🏏', left: '65%', dur: 13, delay: 0.5, size: '2.4rem' },
+                        { icon: '🏆', left: '75%', dur: 9,  delay: 6,   size: '1.7rem' },
+                        { icon: '🏟️', left: '82%', dur: 15, delay: 2.5, size: '2rem'   },
+                        { icon: '⭐', left: '90%', dur: 10, delay: 4.5, size: '1.6rem' },
+                        { icon: '🏏', left: '10%', dur: 16, delay: 7,   size: '1.9rem' },
+                        { icon: '🎽', left: '50%', dur: 12, delay: 8,   size: '2.1rem' },
+                        { icon: '🏆', left: '70%', dur: 11, delay: 1.5, size: '1.5rem' },
+                        { icon: '🏏', left: '30%', dur: 13, delay: 9,   size: '2.3rem' },
                     ].map((item, i) => (
-                        <span key={i} className="cricket-icon" style={{
+                        <span key={i} className="ci" style={{
                             left: item.left,
                             fontSize: item.size,
-                            animationDuration: `${item.dur}, ${parseFloat(item.dur) * 1.5}s`,
-                            animationDelay: `${item.delay}, ${item.delay}`,
+                            top: '105vh',
+                            animationDuration: `${item.dur}s, ${item.dur * 1.5}s`,
+                            animationDelay: `${item.delay}s, ${item.delay}s`,
                         }}>
                             {item.icon}
                         </span>
                     ))}
-                </div>
+                </>
             )}
 
             {/* HERO SECTION */}

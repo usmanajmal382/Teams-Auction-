@@ -1,0 +1,49 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.env
+.env
+
+# Database files (SQLite)
+*.db
+*.sqlite3
+dump.rdb
+
+# Redis binaries and archives
+redis/
+redis.zip
+
+# Node.js / React Frontend
+react-frontend/node_modules/
+react-frontend/dist/
+react-frontend/.env
+react-frontend/lint_output.txt
+
+# Frontend (old)
+frontend/node_modules/
+frontend/dist/
+
+# Uploads (user-generated content, manage separately)
+uploads/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Pytest / testing
+.pytest_cache/
+.coverage
+htmlcov/

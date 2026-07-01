@@ -8,7 +8,7 @@ from datetime import datetime
 from ..models import models, database
 from .auth import require_role
 from ..websocket.manager import manager
-from ..tasks.auction_tasks import wait_for_countdown_task, wait_for_sale_task
+
 
 router = APIRouter(tags=["auction"])
 

@@ -47,10 +47,64 @@ export default function Home() {
         .sort((a, b) => b.count - a.count);
 
     return (
-        <div className="container animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', paddingBottom: '5rem' }}>
-            
+        <div className="container animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '3rem', paddingBottom: '5rem', position: 'relative' }}>
+
+            {/* CRICKET FLOATING BACKGROUND ANIMATION — visible to non-logged-in viewers */}
+            {!user && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+                    pointerEvents: 'none', zIndex: 0, overflow: 'hidden',
+                }}>
+                    <style>{`
+                        @keyframes floatUp {
+                            0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+                            10%  { opacity: 0.6; }
+                            90%  { opacity: 0.4; }
+                            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+                        }
+                        @keyframes sway {
+                            0%, 100% { margin-left: 0; }
+                            50%       { margin-left: 40px; }
+                        }
+                        .cricket-icon {
+                            position: absolute;
+                            bottom: -80px;
+                            font-size: 2rem;
+                            animation: floatUp linear infinite, sway ease-in-out infinite;
+                            filter: drop-shadow(0 0 6px rgba(244,160,28,0.4));
+                        }
+                    `}</style>
+
+                    {[
+                        { icon: '🏏', left: '5%',  dur: '9s',  delay: '0s',   size: '2.2rem' },
+                        { icon: '🏟️', left: '15%', dur: '12s', delay: '2s',   size: '1.8rem' },
+                        { icon: '🏆', left: '25%', dur: '10s', delay: '4s',   size: '2rem'   },
+                        { icon: '🏏', left: '35%', dur: '14s', delay: '1s',   size: '1.6rem' },
+                        { icon: '⚡', left: '45%', dur: '8s',  delay: '3s',   size: '1.5rem' },
+                        { icon: '🎯', left: '55%', dur: '11s', delay: '5s',   size: '2rem'   },
+                        { icon: '🏏', left: '65%', dur: '13s', delay: '0.5s', size: '2.4rem' },
+                        { icon: '🏆', left: '75%', dur: '9s',  delay: '6s',   size: '1.7rem' },
+                        { icon: '🏟️', left: '82%', dur: '15s', delay: '2.5s', size: '2rem'   },
+                        { icon: '⭐', left: '90%', dur: '10s', delay: '4.5s', size: '1.6rem' },
+                        { icon: '🏏', left: '10%', dur: '16s', delay: '7s',   size: '1.9rem' },
+                        { icon: '🎽', left: '50%', dur: '12s', delay: '8s',   size: '2.1rem' },
+                        { icon: '🏆', left: '70%', dur: '11s', delay: '1.5s', size: '1.5rem' },
+                        { icon: '🏏', left: '30%', dur: '13s', delay: '9s',   size: '2.3rem' },
+                    ].map((item, i) => (
+                        <span key={i} className="cricket-icon" style={{
+                            left: item.left,
+                            fontSize: item.size,
+                            animationDuration: `${item.dur}, ${parseFloat(item.dur) * 1.5}s`,
+                            animationDelay: `${item.delay}, ${item.delay}`,
+                        }}>
+                            {item.icon}
+                        </span>
+                    ))}
+                </div>
+            )}
+
             {/* HERO SECTION */}
-            <div className="grid-2" style={{ alignItems: 'center', marginTop: '2rem' }}>
+            <div className="grid-2" style={{ alignItems: 'center', marginTop: '2rem', position: 'relative', zIndex: 1 }}>
                 <div className="animate-slide-up">
                     <h1 style={{ fontSize: '3.5rem', fontWeight: '800', background: 'linear-gradient(to right, #F4A01C, #ffffff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: '1.1', fontFamily: 'Outfit' }}>
                         PCL CRICKET<br />AUCTION ARENA
@@ -77,6 +131,7 @@ export default function Home() {
                     <img src="/assets/home_cricket_auction_1780909121104.png" alt="Cricket Stadium" className="hero-image" style={{ border: '2px solid rgba(244, 160, 28, 0.3)', boxShadow: '0 15px 35px rgba(244, 160, 28, 0.15)' }} />
                 </div>
             </div>
+
 
             {/* SEASON ARCHIVE */}
             <div style={{ marginTop: '2rem' }}>

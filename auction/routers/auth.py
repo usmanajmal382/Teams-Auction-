@@ -1,4 +1,5 @@
 import os
+from pydantic import BaseModel as PydanticBase
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -101,13 +102,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     return db_user
 
 # ── One-time Admin Setup Endpoints ──────────────────────────────
-class AdminSetup(BaseModel):
-    username: str
-    password: str
-
-from pydantic import BaseModel as BaseModel2
-
-class AdminSetupIn(BaseModel2):
+class AdminSetupIn(PydanticBase):
     username: str
     password: str
 

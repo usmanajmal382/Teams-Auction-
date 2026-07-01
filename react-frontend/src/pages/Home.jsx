@@ -125,11 +125,51 @@ export default function Home() {
                             </>
                         )}
                     </div>
+
+                    {/* DEVELOPER CREDIT — animated, right in hero */}
+                    <style>{`
+                        @keyframes devBadgeGlow {
+                            0%, 100% { box-shadow: 0 0 10px rgba(244,160,28,0.2), 0 0 20px rgba(244,160,28,0.1); border-color: rgba(244,160,28,0.3); }
+                            50%       { box-shadow: 0 0 20px rgba(244,160,28,0.5), 0 0 40px rgba(244,160,28,0.2); border-color: rgba(244,160,28,0.7); }
+                        }
+                        @keyframes devNameShine {
+                            0%, 100% { background-position: 0% 50%; }
+                            50%       { background-position: 100% 50%; }
+                        }
+                        .dev-badge {
+                            display: inline-flex; align-items: center; gap: 0.6rem;
+                            margin-top: 1.5rem;
+                            padding: 0.55rem 1.2rem;
+                            border-radius: 50px;
+                            border: 1px solid rgba(244,160,28,0.3);
+                            background: rgba(244,160,28,0.07);
+                            animation: devBadgeGlow 2.5s ease-in-out infinite;
+                            cursor: default;
+                        }
+                        .dev-name {
+                            font-family: 'Outfit', sans-serif;
+                            font-weight: 800;
+                            font-size: 1rem;
+                            background: linear-gradient(90deg, #F4A01C, #fff, #F4A01C);
+                            background-size: 200% auto;
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            animation: devNameShine 2.5s linear infinite;
+                        }
+                    `}</style>
+                    <div className="dev-badge">
+                        <span style={{ fontSize: '1rem' }}>⚡</span>
+                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>Built by</span>
+                        <span className="dev-name">Usman Ajmal</span>
+                        <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.7rem' }}>|</span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>PCL Platform © 2026</span>
+                    </div>
                 </div>
                 <div className="animate-float" style={{ display: 'flex', justifyContent: 'center' }}>
                     <img src="/assets/home_cricket_auction_1780909121104.png" alt="Cricket Stadium" className="hero-image" style={{ border: '2px solid rgba(244, 160, 28, 0.3)', boxShadow: '0 15px 35px rgba(244, 160, 28, 0.15)' }} />
                 </div>
             </div>
+
 
 
 

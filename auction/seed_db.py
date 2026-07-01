@@ -1,5 +1,5 @@
-from models import models, database
-from routers.auth import get_password_hash
+from auction.models import models, database
+from auction.routers.auth import get_password_hash
 from sqlalchemy.orm import Session
 
 def seed():

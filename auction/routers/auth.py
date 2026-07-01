@@ -130,3 +130,36 @@ def setup_admin(data: AdminSetupIn, db: Session = Depends(database.get_db)):
     db.commit()
     return {"message": "Admin account created successfully."}
 
+
+# Change Password Endpoint
+class ChangePasswordIn(PydanticBase):
+    current_password: str
+    new_password: str
+
+@router.put("/auth/change-password")
+def change_password(
+    data: ChangePasswordIn,
+    db: Session = Depends(database.get_db),
+    token: str = Depends(oauth2_scheme)
+):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not verify_password(data.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+
+    user.password_hash = get_password_hash(data.new_password)
+    db.commit()
+    return {"message": "Password changed successfully"}

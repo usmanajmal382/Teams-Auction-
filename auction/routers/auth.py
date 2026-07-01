@@ -99,3 +99,39 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+# ── One-time Admin Setup Endpoints ──────────────────────────────
+class AdminSetup(BaseModel):
+    username: str
+    password: str
+
+from pydantic import BaseModel as BaseModel2
+
+class AdminSetupIn(BaseModel2):
+    username: str
+    password: str
+
+@router.get("/auth/admin-exists")
+def admin_exists(db: Session = Depends(database.get_db)):
+    """Check if any admin user already exists."""
+    exists = db.query(models.User).filter(models.User.role == "admin").first() is not None
+    return {"exists": exists}
+
+@router.post("/auth/setup-admin")
+def setup_admin(data: AdminSetupIn, db: Session = Depends(database.get_db)):
+    """Create admin account — only works if no admin exists yet."""
+    existing_admin = db.query(models.User).filter(models.User.role == "admin").first()
+    if existing_admin:
+        raise HTTPException(status_code=403, detail="Admin account already exists. Registration is closed.")
+    existing_user = get_user_by_username(db, data.username)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already taken.")
+    admin = models.User(
+        username=data.username,
+        password_hash=get_password_hash(data.password),
+        role="admin"
+    )
+    db.add(admin)
+    db.commit()
+    return {"message": "Admin account created successfully."}
+

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiCall, getUser } from '../utils/api';
+import { apiCall, getUser, API_URL } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function Admin() {
@@ -194,7 +194,7 @@ export default function Admin() {
     const handleDownloadPdf = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://127.0.0.1:8000/auction/pdf', {
+            const response = await fetch(`${API_URL}/auction/pdf`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) {

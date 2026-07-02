@@ -400,8 +400,13 @@ def generate_results_pdf(db: Session):
     for team in teams:
         story.append(Paragraph(f"Team: {team.name} (Owner: {team.owner_name})", section_style))
         
-        # Get squad
-        squad = db.query(models.Player).filter(models.Player.sold_to_team_id == team.id, models.Player.status == 'sold').all()
+        # Get squad — both auction-sold AND pre-retained players
+        squad = db.query(models.Player).filter(
+            models.Player.sold_to_team_id == team.id,
+            models.Player.status.in_(['sold', 'retained'])
+        ).all()
+        retained_players = [p for p in squad if p.status == 'retained']
+        sold_players = [p for p in squad if p.status == 'sold']
         spent = sum(p.final_price for p in squad if p.final_price is not None)
         remaining = team.total_budget - spent
         
@@ -422,7 +427,17 @@ def generate_results_pdf(db: Session):
                 Paragraph("-", body_style)
             ])
 
-        for player in squad:
+        # Retained players (pre-auction)
+        for player in retained_players:
+            table_data.append([
+                Paragraph(f"<b>{player.name}</b>", body_style),
+                Paragraph(player.role, body_style),
+                Paragraph(player.nationality or "-", body_style),
+                Paragraph(f"Rs.{player.final_price:,.0f} (Retained)", body_style)
+            ])
+
+        # Auction-sold players
+        for player in sold_players:
             table_data.append([
                 Paragraph(player.name, body_style),
                 Paragraph(player.role, body_style),
@@ -434,7 +449,10 @@ def generate_results_pdf(db: Session):
             table_data.append([Paragraph("No players purchased.", body_style), "", "", ""])
             
         t = Table(table_data, colWidths=[200, 120, 100, 120])
-        t.setStyle(TableStyle([
+
+        # Build dynamic style — gold background for retained player rows
+        captain_offset = 1 if team.captain_name else 0
+        table_style_cmds = [
             ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0A1628')),
             ('ALIGN', (0,0), (-1,-1), 'LEFT'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
@@ -442,7 +460,13 @@ def generate_results_pdf(db: Session):
             ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#F8FAFC')]),
             ('BOTTOMPADDING', (0,0), (-1,-1), 6),
             ('TOPPADDING', (0,0), (-1,-1), 6),
-        ]))
+        ]
+        # Highlight each retained player row with a soft gold background
+        for i, _ in enumerate(retained_players):
+            row_idx = 1 + captain_offset + i  # header=0, captain=1 (optional), then retained
+            table_style_cmds.append(('BACKGROUND', (0, row_idx), (-1, row_idx), colors.HexColor('#FEF9C3')))
+
+        t.setStyle(TableStyle(table_style_cmds))
         story.append(t)
         story.append(Spacer(1, 15))
         

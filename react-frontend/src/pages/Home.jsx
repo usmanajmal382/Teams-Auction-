@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -233,7 +233,7 @@ export default function Home() {
                             {diffDays <= 0 ? '🔴 LIVE TODAY!' : diffDays === 1 ? '⚡ TOMORROW!' : `⏳ ${diffDays} days to go`}
                         </div>
                         <div style={{ marginTop: '0.75rem', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
-                            Organized by <strong style={{ color: '#F4A01C' }}>Hassan Khan</strong> — CEO, GTCC
+                            Organized by <strong style={{ color: '#F4A01C' }}>Umer Haddi</strong> — CEO, GTCC
                         </div>
                     </div>
                 );
@@ -330,7 +330,7 @@ export default function Home() {
                                     {mostExpensive.map((p, idx) => (
                                         <div key={p.id} style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', fontSize: '0.9rem' }}>
                                             <span style={{ color: 'var(--text-muted)' }}>{idx + 1}. {p.name}</span>
-                                            <strong style={{ marginLeft: 'auto', color: '#F4A01C' }}>₹{p.final_price?.toLocaleString()}</strong>
+                                            <strong style={{ marginLeft: 'auto', color: '#F4A01C' }}>Rs {p.final_price?.toLocaleString()}</strong>
                                         </div>
                                     ))}
                                     {mostExpensive.length === 0 && (
@@ -348,7 +348,7 @@ export default function Home() {
                                     {teamSpending.map((t, idx) => (
                                         <div key={idx} style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', fontSize: '0.9rem' }}>
                                             <span style={{ color: 'var(--text-muted)' }}>{t.name}</span>
-                                            <strong style={{ marginLeft: 'auto', color: 'white' }}>₹{t.spent?.toLocaleString()}</strong>
+                                            <strong style={{ marginLeft: 'auto', color: 'white' }}>Rs {t.spent?.toLocaleString()}</strong>
                                         </div>
                                     ))}
                                     {teamSpending.length === 0 && (
@@ -413,7 +413,7 @@ export default function Home() {
                 }}>
                     <span style={{ fontSize: '1.1rem' }}>🏛️</span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Organized by</span>
-                    <span style={{ color: '#F4A01C', fontWeight: '700', fontSize: '0.95rem', fontFamily: 'Outfit' }}>Hassan Khan</span>
+                    <span style={{ color: '#F4A01C', fontWeight: '700', fontSize: '0.95rem', fontFamily: 'Outfit' }}>Umer Haddi</span>
                     <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.75rem' }}>—</span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontStyle: 'italic' }}>CEO, GTCC</span>
                 </div>

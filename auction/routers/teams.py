@@ -50,3 +50,25 @@ def assign_captain(team_id: int, req: CaptainAssignRequest, db: Session = Depend
     db.commit()
     db.refresh(team)
     return team
+
+
+class BudgetUpdateRequest(BaseModel):
+    total_budget: float
+
+@router.put("/{team_id}/budget", response_model=schemas.Team)
+def update_team_budget(
+    team_id: int,
+    req: BudgetUpdateRequest,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(require_role(["admin"]))
+):
+    """Admin sets the starting budget for a team before auction begins."""
+    team = db.query(models.Team).filter(models.Team.id == team_id).first()
+    if team is None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if req.total_budget < 0:
+        raise HTTPException(status_code=400, detail="Budget cannot be negative")
+    team.total_budget = req.total_budget
+    db.commit()
+    db.refresh(team)
+    return team

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -221,7 +221,7 @@ export default function Players() {
                                     <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.stats}>
                                         {p.stats || '-'}
                                     </td>
-                                    <td style={{ color: 'var(--accent)', fontWeight: '500' }}>₹{p.base_price?.toLocaleString()}</td>
+                                    <td style={{ color: 'var(--accent)', fontWeight: '500' }}>Rs {p.base_price?.toLocaleString()}</td>
                                     <td>
                                         <span className={`status ${p.status}`}>
                                             {p.status}
@@ -231,7 +231,7 @@ export default function Players() {
                                         {p.team_name || '-'}
                                     </td>
                                     <td style={{ fontWeight: p.final_price ? 'bold' : 'normal', color: p.final_price ? 'var(--secondary)' : 'inherit' }}>
-                                        {p.final_price ? `₹${p.final_price.toLocaleString()}` : '-'}
+                                        {p.final_price ? `Rs ${p.final_price.toLocaleString()}` : '-'}
                                     </td>
                                     {isAdmin && (
                                         <td>
@@ -291,7 +291,7 @@ export default function Players() {
                                     </select>
                                 </div>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
-                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Base Price (₹)</label>
+                                    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Base Price (Rs )</label>
                                     <input type="number" value={editBasePrice} onChange={e => setEditBasePrice(e.target.value)} required />
                                 </div>
                             </div>

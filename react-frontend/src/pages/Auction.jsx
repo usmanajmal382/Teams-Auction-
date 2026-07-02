@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { apiCall, WS_URL, getUser } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -143,7 +143,7 @@ export default function Auction() {
                     startCountdown(data.seconds);
                 } else if (data.type === 'sold') {
                     stopCountdown();
-                    showStatusMsg(`Sold to ${data.team_name} for ₹${data.amount.toLocaleString()}`);
+                    showStatusMsg(`Sold to ${data.team_name} for Rs ${data.amount.toLocaleString()}`);
                     clearAuctionState();
                     fetchOwnerTeam();
                     fetchOwnerSquad();
@@ -155,7 +155,7 @@ export default function Auction() {
                     stopCountdown();
                     // Process RTM decision
                     if (user.role === 'owner' && user.team_id === data.rtm_team_id) {
-                        if (window.confirm(`Right to Match available! Match bid of ₹${data.highest_bid.toLocaleString()}?`)) {
+                        if (window.confirm(`Right to Match available! Match bid of Rs ${data.highest_bid.toLocaleString()}?`)) {
                             apiCall(`/auction/rtm/${data.player_id}?use_rtm=true`, {
                                 method: 'POST',
                                 body: JSON.stringify({ team_id: user.team_id })
@@ -224,12 +224,12 @@ export default function Auction() {
         
         const bidAmount = parseInt(amountToBid);
         if (isNaN(bidAmount) || bidAmount < nextMinBid) {
-            alert(`Bid must be at least the minimum next bid (₹${nextMinBid.toLocaleString()})`);
+            alert(`Bid must be at least the minimum next bid (Rs ${nextMinBid.toLocaleString()})`);
             return;
         }
 
         if (ownerTeam && bidAmount > ownerTeam.remaining_budget) {
-            alert(`Insufficient budget! Your remaining budget is ₹${ownerTeam.remaining_budget.toLocaleString()}`);
+            alert(`Insufficient budget! Your remaining budget is Rs ${ownerTeam.remaining_budget.toLocaleString()}`);
             return;
         }
 
@@ -263,7 +263,7 @@ export default function Auction() {
                         </div>
                         <div className="text-right-responsive">
                             <span className="text-muted">Remaining Budget:</span>
-                            <h2 style={{ color: 'var(--secondary)', fontFamily: 'Outfit' }}>₹{ownerTeam.remaining_budget.toLocaleString()}</h2>
+                            <h2 style={{ color: 'var(--secondary)', fontFamily: 'Outfit' }}>Rs {ownerTeam.remaining_budget.toLocaleString()}</h2>
                         </div>
                     </div>
                 )}
@@ -285,7 +285,7 @@ export default function Auction() {
                             <div className="status available mt-2">{currentPlayer.role}</div>
                             <p className="mt-2 text-muted">{currentPlayer.nationality}</p>
                             <div className="mt-2" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                                <p>Base Price: <strong style={{ color: 'white' }}>₹{currentPlayer.base_price.toLocaleString()}</strong></p>
+                                <p>Base Price: <strong style={{ color: 'white' }}>Rs {currentPlayer.base_price.toLocaleString()}</strong></p>
                             </div>
                             <img src="/assets/live_auction_bidding_1780909276215.png" alt="Live Bidding" style={{ width: '100%', borderRadius: '12px', marginTop: '1.5rem', border: '1px solid var(--border)', objectFit: 'cover', height: '150px' }} />
                         </div>
@@ -296,7 +296,7 @@ export default function Auction() {
                             <div className="card text-center animate-slide-in-right">
                                 <h3>Current Bid</h3>
                                 <h1 style={{fontSize: '3rem', color: 'var(--accent)', margin: '0.5rem 0'}}>
-                                    ₹{currentBid.toLocaleString()}
+                                    Rs {currentBid.toLocaleString()}
                                 </h1>
                                 <p style={{ fontSize: '1.1rem' }}>
                                     Winning: {winningTeam !== 'None' ? (
@@ -341,7 +341,7 @@ export default function Auction() {
                                             onClick={() => placeBid(nextMinBid)}
                                             disabled={!canAfford}
                                         >
-                                            {!canAfford ? "Cannot Afford Next Bid" : `Bid Minimum: ₹${nextMinBid.toLocaleString()}`}
+                                            {!canAfford ? "Cannot Afford Next Bid" : `Bid Minimum: Rs ${nextMinBid.toLocaleString()}`}
                                         </button>
 
                                         {/* Custom Bid Input */}
@@ -350,7 +350,7 @@ export default function Auction() {
                                                 type="number" 
                                                 value={customBid}
                                                 onChange={(e) => setCustomBid(e.target.value)}
-                                                placeholder={`Min: ₹${nextMinBid}`}
+                                                placeholder={`Min: Rs ${nextMinBid}`}
                                                 style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'rgba(0,0,0,0.3)', color: 'white', fontSize: '1rem', width: '100%', flex: 1 }}
                                             />
                                             <button 
@@ -376,7 +376,7 @@ export default function Auction() {
                                                 {bid.owner_name || bid.team_name} Owner
                                             </span>
                                             <strong style={{ color: 'var(--secondary)' }}>
-                                                ₹{bid.amount.toLocaleString()}
+                                                Rs {bid.amount.toLocaleString()}
                                             </strong>
                                         </div>
                                     ))}
@@ -429,9 +429,9 @@ export default function Auction() {
                                                 <td style={{ fontWeight: '500' }}>{p.name}</td>
                                                 <td>{p.role}</td>
                                                 <td>{p.nationality}</td>
-                                                <td>₹{p.base_price?.toLocaleString()}</td>
+                                                <td>Rs {p.base_price?.toLocaleString()}</td>
                                                 <td style={{ fontWeight: 'bold', color: 'var(--secondary)' }}>
-                                                    ₹{p.final_price?.toLocaleString()}
+                                                    Rs {p.final_price?.toLocaleString()}
                                                 </td>
                                             </tr>
                                         ))}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -56,12 +56,12 @@ export default function Teams() {
                                     <div className="flex-between" style={{ fontSize: '0.9rem' }}>
                                         <span style={{ color: 'var(--text-muted)' }}>Purse Left:</span>
                                         <strong style={{ color: 'var(--secondary)', fontSize: '1.1rem' }}>
-                                            ₹{t.remaining_budget?.toLocaleString()}
+                                            Rs {t.remaining_budget?.toLocaleString()}
                                         </strong>
                                     </div>
                                     <div className="flex-between" style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: 'var(--text-muted)' }}>
-                                        <span>Spent: ₹{spent?.toLocaleString()}</span>
-                                        <span>Total: ₹{t.total_budget?.toLocaleString()}</span>
+                                        <span>Spent: Rs {spent?.toLocaleString()}</span>
+                                        <span>Total: Rs {t.total_budget?.toLocaleString()}</span>
                                     </div>
                                     <div className="budget-bar" style={{ margin: '0.5rem 0 1.25rem' }}>
                                         <div className="budget-fill" style={{ width: `${spentPercent}%` }}></div>
@@ -85,7 +85,7 @@ export default function Teams() {
                                        {squad.map(p => (
                                            <div key={p.id} className="squad-member">
                                                <span>{p.name}</span>
-                                               <strong style={{ color: 'white' }}>₹{p.final_price?.toLocaleString()}</strong>
+                                               <strong style={{ color: 'white' }}>Rs {p.final_price?.toLocaleString()}</strong>
                                            </div>
                                        ))}
                                        {squad.length === 0 && !t.captain_name && (

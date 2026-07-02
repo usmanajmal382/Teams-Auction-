@@ -18,6 +18,9 @@ export default function Admin() {
     const [pwNew, setPwNew] = useState('');
     const [pwMsg, setPwMsg] = useState('');
     const [pwError, setPwError] = useState('');
+    const [teamBudgets, setTeamBudgets] = useState({});
+    const [budgetSaving, setBudgetSaving] = useState({});
+    const [budgetMsg, setBudgetMsg] = useState({});
     const navigate = useNavigate();
 
     const loadData = async () => {
@@ -71,14 +74,14 @@ export default function Admin() {
         }
         const price = parseFloat(soldPrice);
         if (isNaN(price) || price < curPlayer.base_price) {
-            alert(`Sold price must be a number greater than or equal to the base price of ₹${curPlayer.base_price.toLocaleString()}.`);
+            alert(`Sold price must be a number greater than or equal to the base price of Rs ${curPlayer.base_price.toLocaleString()}.`);
             return;
         }
 
         const targetTeam = teams.find(t => t.id === parseInt(selectedTeamId));
         if (!targetTeam) return;
         if (price > targetTeam.remaining_budget) {
-            alert(`Insufficient budget! ${targetTeam.name} only has ₹${targetTeam.remaining_budget.toLocaleString()} remaining.`);
+            alert(`Insufficient budget! ${targetTeam.name} only has Rs ${targetTeam.remaining_budget.toLocaleString()} remaining.`);
             return;
         }
 
@@ -93,7 +96,7 @@ export default function Admin() {
             // Reset selected override and refresh lists
             setSelectedPlayerId(null);
             await loadData();
-            alert(`${curPlayer.name} sold to ${targetTeam.name} for ₹${price.toLocaleString()}!`);
+            alert(`${curPlayer.name} sold to ${targetTeam.name} for Rs ${price.toLocaleString()}!`);
         } catch (err) {
             alert(err.message);
         }
@@ -436,7 +439,7 @@ export default function Admin() {
                                         }}>
                                             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Base Price</span>
                                             <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.3rem', color: 'var(--accent)' }}>
-                                                ₹{curPlayer.base_price?.toLocaleString()}
+                                                Rs {curPlayer.base_price?.toLocaleString()}
                                             </span>
                                         </div>
                                     </div>
@@ -498,7 +501,7 @@ export default function Admin() {
                                                         onClick={() => setSelectedTeamId(t.id)}
                                                     >
                                                         <span className="team-chip-name">{t.name}</span>
-                                                        <span className="team-chip-purse">₹{t.remaining_budget?.toLocaleString()}</span>
+                                                        <span className="team-chip-purse">Rs {t.remaining_budget?.toLocaleString()}</span>
                                                     </button>
                                                 ))}
                                             </div>
@@ -519,9 +522,9 @@ export default function Admin() {
                                                 textTransform: 'uppercase', color: 'var(--text-muted)',
                                                 display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem'
                                             }}>
-                                                <span style={{ color: 'var(--accent)' }}>₹</span> Final Sold Price
+                                                <span style={{ color: 'var(--accent)' }}>Rs </span> Final Sold Price
                                                 <span style={{ marginLeft: 'auto', fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>
-                                                    Min ₹{curPlayer.base_price?.toLocaleString()}
+                                                    Min Rs {curPlayer.base_price?.toLocaleString()}
                                                 </span>
                                             </label>
                                             <div className="price-stepper">
@@ -649,7 +652,7 @@ export default function Admin() {
                                                 </td>
                                                 <td>{h.team_name}</td>
                                                 <td style={{ fontWeight: 'bold', color: h.status === 'sold' ? 'var(--secondary)' : 'var(--text-muted)' }}>
-                                                    {h.price ? `₹${h.price.toLocaleString()}` : '-'}
+                                                    {h.price ? `Rs ${h.price.toLocaleString()}` : '-'}
                                                 </td>
                                                 <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                                                     {h.time ? new Date(h.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'}
@@ -691,7 +694,7 @@ export default function Admin() {
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
                                             <span style={{ fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 'bold' }}>
-                                                ₹{p.base_price?.toLocaleString()}
+                                                Rs {p.base_price?.toLocaleString()}
                                             </span>
                                             {isCurrent && (
                                                 <div style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 'bold', marginTop: '0.2rem' }}>
@@ -811,12 +814,12 @@ export default function Admin() {
                                         <div className="flex-between" style={{ fontSize: '0.85rem' }}>
                                             <span style={{ color: 'var(--text-muted)' }}>Purse Left:</span>
                                             <strong style={{ color: 'var(--secondary)', fontSize: '1.05rem', textShadow: '0 0 10px rgba(16,185,129,0.3)' }}>
-                                                ₹{t.remaining_budget?.toLocaleString()}
+                                                Rs {t.remaining_budget?.toLocaleString()}
                                             </strong>
                                         </div>
                                         <div className="flex-between" style={{ fontSize: '0.75rem', marginTop: '0.35rem', color: 'var(--text-muted)' }}>
-                                            <span>Spent: <span style={{color:'white'}}>₹{spent?.toLocaleString()}</span></span>
-                                            <span>Total: <span style={{color:'white'}}>₹{t.total_budget?.toLocaleString()}</span></span>
+                                            <span>Spent: <span style={{color:'white'}}>Rs {spent?.toLocaleString()}</span></span>
+                                            <span>Total: <span style={{color:'white'}}>Rs {t.total_budget?.toLocaleString()}</span></span>
                                         </div>
                                         <div className="budget-bar" style={{ marginTop: '0.5rem', height: '6px' }}>
                                             <div className="budget-fill" style={{ width: `${spentPercent}%`, background: spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)', boxShadow: `0 0 8px ${spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)'}` }}></div>
@@ -902,7 +905,7 @@ export default function Admin() {
                                                         </span>
                                                     </div>
                                                     <span style={{ fontWeight: 'bold', color: 'var(--secondary)', fontSize: '0.85rem' }}>
-                                                        ₹{(p.final_price/1000).toFixed(0)}k
+                                                        Rs {(p.final_price/1000).toFixed(0)}k
                                                     </span>
                                                 </div>
                                             ))}
@@ -955,6 +958,78 @@ export default function Admin() {
                         }}>
                         Update Password
                     </button>
+                </div>
+            </div>
+
+            {/* PRE-AUCTION BUDGET SETUP SECTION */}
+            <div className="card" style={{ marginTop: '2rem', border: '1px solid rgba(16,185,129,0.2)', borderLeft: '4px solid #10b981' }}>
+                <h3 style={{ fontSize: '1.1rem', color: 'white', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    💰 Pre-Auction Team Budget Setup
+                </h3>
+                <p className="text-muted" style={{ fontSize: '0.82rem', marginBottom: '1.4rem' }}>
+                    Set each team's starting budget before the auction begins. Useful when teams have retained players whose fees need to be deducted upfront.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
+                    {teams.map(t => {
+                        const currentVal = teamBudgets[t.id] !== undefined ? teamBudgets[t.id] : t.total_budget;
+                        const msg = budgetMsg[t.id];
+                        const saving = budgetSaving[t.id];
+                        return (
+                            <div key={t.id} style={{
+                                background: 'rgba(16,185,129,0.04)',
+                                border: '1px solid rgba(16,185,129,0.15)',
+                                borderRadius: '10px',
+                                padding: '0.9rem 1rem'
+                            }}>
+                                <div style={{ fontWeight: '700', color: 'white', fontSize: '0.9rem', marginBottom: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {t.name}
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                    <span style={{ color: 'var(--secondary)', fontWeight: '700', fontSize: '0.85rem' }}>Rs</span>
+                                    <input
+                                        type="number"
+                                        value={currentVal}
+                                        min="0"
+                                        onChange={e => setTeamBudgets(prev => ({ ...prev, [t.id]: parseFloat(e.target.value) || 0 }))}
+                                        style={{
+                                            flex: 1,
+                                            background: 'rgba(0,0,0,0.35)',
+                                            border: '1px solid rgba(16,185,129,0.25)',
+                                            borderRadius: '6px',
+                                            color: 'white',
+                                            padding: '0.35rem 0.5rem',
+                                            fontSize: '0.85rem',
+                                            outline: 'none',
+                                            width: '100%'
+                                        }}
+                                    />
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', whiteSpace: 'nowrap', opacity: saving ? 0.6 : 1 }}
+                                        disabled={saving}
+                                        onClick={async () => {
+                                            setBudgetSaving(prev => ({ ...prev, [t.id]: true }));
+                                            setBudgetMsg(prev => ({ ...prev, [t.id]: '' }));
+                                            try {
+                                                await apiCall(`/teams/${t.id}/budget`, {
+                                                    method: 'PUT',
+                                                    body: JSON.stringify({ total_budget: currentVal })
+                                                });
+                                                setBudgetMsg(prev => ({ ...prev, [t.id]: '✅ Saved' }));
+                                                await loadData();
+                                                setTimeout(() => setBudgetMsg(prev => ({ ...prev, [t.id]: '' })), 2500);
+                                            } catch (err) {
+                                                setBudgetMsg(prev => ({ ...prev, [t.id]: '❌ ' + err.message }));
+                                            } finally {
+                                                setBudgetSaving(prev => ({ ...prev, [t.id]: false }));
+                                            }
+                                        }}
+                                    >{saving ? '...' : 'Save'}</button>
+                                </div>
+                                {msg && <div style={{ fontSize: '0.72rem', marginTop: '0.35rem', color: msg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)' }}>{msg}</div>}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 

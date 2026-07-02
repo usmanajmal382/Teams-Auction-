@@ -52,6 +52,22 @@ def delete_player(player_id: int, db: Session = Depends(database.get_db), curren
     db.commit()
     return {"message": "Player deleted successfully"}
 
+@router.delete("")
+def delete_all_players(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
+    # Delete all bids first to avoid foreign key constraint errors
+    db.query(models.Bid).delete()
+    # Delete all players
+    deleted_count = db.query(models.Player).delete()
+    
+    # Also reset teams' spent budget since all players (and bids) are gone
+    teams = db.query(models.Team).all()
+    for team in teams:
+        team.spent_budget = 0.0
+        team.remaining_budget = team.total_budget
+        
+    db.commit()
+    return {"message": f"Successfully deleted all {deleted_count} players and reset team budgets."}
+
 @router.post("/upload")
 def upload_players_csv(file: UploadFile = File(...), db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
     if not file.filename.endswith('.csv'):

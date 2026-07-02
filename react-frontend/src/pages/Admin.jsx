@@ -153,6 +153,19 @@ export default function Admin() {
         }
     };
 
+    const handleDeleteAllPlayers = async () => {
+        if (!window.confirm("Are you sure you want to delete ALL players? This action cannot be undone.")) return;
+        try {
+            const res = await apiCall('/players', {
+                method: 'DELETE'
+            });
+            alert(res.message);
+            await loadData();
+        } catch (err) {
+            alert('Failed to delete players: ' + err.message);
+        }
+    };
+
     const handleCsvUpload = async (e) => {
         e.preventDefault();
         if (!csvFile) return;
@@ -713,6 +726,20 @@ export default function Admin() {
                                 Upload and Queue Players
                             </button>
                         </form>
+                        
+                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+                            <button 
+                                onClick={handleDeleteAllPlayers} 
+                                className="btn btn-danger" 
+                                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                            >
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Delete All Players
+                            </button>
+                            <p className="text-muted" style={{ fontSize: '0.75rem', marginTop: '0.5rem', textAlign: 'center' }}>
+                                Caution: This will remove all players and reset teams' spent budgets.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

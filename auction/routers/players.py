@@ -39,19 +39,6 @@ def update_player(player_id: int, player_data: schemas.PlayerCreate, db: Session
     player.team_name = player.team.name if player.team else None
     return player
 
-@router.delete("/{player_id}")
-def delete_player(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
-    player = db.query(models.Player).filter(models.Player.id == player_id).first()
-    if not player:
-        raise HTTPException(status_code=404, detail="Player not found")
-        
-    # Delete associated bids
-    db.query(models.Bid).filter(models.Bid.player_id == player_id).delete()
-    
-    db.delete(player)
-    db.commit()
-    return {"message": "Player deleted successfully"}
-
 @router.delete("/all")
 def delete_all_players(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
     # Delete all bids first to avoid foreign key constraint errors
@@ -67,6 +54,19 @@ def delete_all_players(db: Session = Depends(database.get_db), current_user: mod
         
     db.commit()
     return {"message": f"Successfully deleted all {deleted_count} players and reset team budgets."}
+
+@router.delete("/{player_id}")
+def delete_player(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+        
+    # Delete associated bids
+    db.query(models.Bid).filter(models.Bid.player_id == player_id).delete()
+    
+    db.delete(player)
+    db.commit()
+    return {"message": "Player deleted successfully"}
 
 @router.post("/upload")
 def upload_players_csv(file: UploadFile = File(...), db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):

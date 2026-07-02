@@ -32,7 +32,11 @@ export async function apiCall(endpoint, options = {}) {
     
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'API request failed');
+        let errMsg = error.detail || 'API request failed';
+        if (typeof errMsg === 'object') {
+            errMsg = JSON.stringify(errMsg);
+        }
+        throw new Error(errMsg);
     }
 
     return response.json();

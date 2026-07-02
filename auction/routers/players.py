@@ -46,14 +46,8 @@ def delete_all_players(db: Session = Depends(database.get_db), current_user: mod
     # Delete all players
     deleted_count = db.query(models.Player).delete()
     
-    # Also reset teams' spent budget since all players (and bids) are gone
-    teams = db.query(models.Team).all()
-    for team in teams:
-        team.spent_budget = 0.0
-        team.remaining_budget = team.total_budget
-        
     db.commit()
-    return {"message": f"Successfully deleted all {deleted_count} players and reset team budgets."}
+    return {"message": f"Successfully deleted all {deleted_count} players. Team budgets are automatically reset."}
 
 @router.delete("/{player_id}")
 def delete_player(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):

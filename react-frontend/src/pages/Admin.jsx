@@ -162,7 +162,10 @@ export default function Admin() {
             alert(res.message);
             await loadData();
         } catch (err) {
-            alert('Failed to delete players: ' + err.message);
+            console.error("Delete players error:", err);
+            let msg = err.message;
+            if (typeof msg === 'object') msg = JSON.stringify(msg);
+            alert('Failed to delete players: ' + msg);
         }
     };
 

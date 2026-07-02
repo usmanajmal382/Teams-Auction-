@@ -72,3 +72,43 @@ def update_team_budget(
     db.commit()
     db.refresh(team)
     return team
+
+
+class RetainPlayerRequest(BaseModel):
+    player_name: str
+    role: Optional[str] = "Retained"
+    retention_fee: float
+
+@router.post("/{team_id}/retain-player", response_model=schemas.Player)
+def retain_player(
+    team_id: int,
+    req: RetainPlayerRequest,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(require_role(["admin"]))
+):
+    """Manually add a retained player to a team. Fee is deducted from team budget."""
+    team = db.query(models.Team).filter(models.Team.id == team_id).first()
+    if team is None:
+        raise HTTPException(status_code=404, detail="Team not found")
+    if req.retention_fee < 0:
+        raise HTTPException(status_code=400, detail="Retention fee cannot be negative")
+    if req.retention_fee > team.remaining_budget:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Retention fee Rs {req.retention_fee:,.0f} exceeds team's remaining budget Rs {team.remaining_budget:,.0f}"
+        )
+
+    player = models.Player(
+        name=req.player_name.strip(),
+        role=req.role or "Retained",
+        base_price=req.retention_fee,
+        nationality="Pakistan",
+        status="retained",
+        sold_to_team_id=team_id,
+        final_price=req.retention_fee,
+    )
+    db.add(player)
+    db.commit()
+    db.refresh(player)
+    player.team_name = team.name
+    return player

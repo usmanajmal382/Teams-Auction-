@@ -21,6 +21,13 @@ export default function Admin() {
     const [teamBudgets, setTeamBudgets] = useState({});
     const [budgetSaving, setBudgetSaving] = useState({});
     const [budgetMsg, setBudgetMsg] = useState({});
+    // Retained players state
+    const [retainTeamId, setRetainTeamId] = useState('');
+    const [retainName, setRetainName] = useState('');
+    const [retainRole, setRetainRole] = useState('Batsman');
+    const [retainFee, setRetainFee] = useState('');
+    const [retainMsg, setRetainMsg] = useState('');
+    const [retainLoading, setRetainLoading] = useState(false);
     const navigate = useNavigate();
 
     const loadData = async () => {
@@ -796,7 +803,9 @@ export default function Admin() {
 
                 <div className="teams-grid">
                     {teams.map(t => {
-                        const squad = players.filter(p => p.sold_to_team_id === t.id && p.status === 'sold');
+                        const squad = players.filter(p => p.sold_to_team_id === t.id && (p.status === 'sold' || p.status === 'retained'));
+                        const retainedInSquad = squad.filter(p => p.status === 'retained');
+                        const soldInSquad = squad.filter(p => p.status === 'sold');
                         const spent = t.total_budget - t.remaining_budget;
                         const spentPercent = Math.min(100, Math.max(0, (spent / t.total_budget) * 100));
 
@@ -892,7 +901,16 @@ export default function Admin() {
                                                     <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontStyle: 'italic' }}>Retained</span>
                                                 </div>
                                             )}
-                                            {squad.map((p, idx) => (
+                                            {retainedInSquad.map((p, idx) => (
+                                                <div key={p.id} className="squad-member-animated flex-between" style={{ borderLeft: '3px solid #F4A01C', animationDelay: `${idx * 0.05}s` }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflow: 'hidden' }}>
+                                                        <span style={{ background: '#F4A01C', color: '#000', fontWeight: '800', fontSize: '0.55rem', padding: '0.05rem 0.3rem', borderRadius: '3px', flexShrink: 0 }}>RET</span>
+                                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px', fontSize: '0.85rem', color: '#e2e8f0' }}>{p.name}</span>
+                                                    </div>
+                                                    <span style={{ fontWeight: 'bold', color: '#F4A01C', fontSize: '0.8rem' }}>Rs {(p.final_price/1000).toFixed(0)}k</span>
+                                                </div>
+                                            ))}
+                                            {soldInSquad.map((p, idx) => (
                                                 <div key={p.id} className="squad-member-animated flex-between" style={{ animationDelay: `${idx * 0.05}s` }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                                         <span className="role-icon">
@@ -914,6 +932,7 @@ export default function Admin() {
                                                     No players bought yet
                                                 </div>
                                             )}
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1031,6 +1050,140 @@ export default function Admin() {
                         );
                     })}
                 </div>
+            </div>
+
+            {/* RETAINED PLAYERS SETUP SECTION */}
+            <div className="card" style={{ marginTop: '2rem', border: '1px solid rgba(244,160,28,0.25)', borderLeft: '4px solid #F4A01C' }}>
+                <h3 style={{ fontSize: '1.1rem', color: 'white', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    🏅 Retained Players Setup
+                </h3>
+                <p className="text-muted" style={{ fontSize: '0.82rem', marginBottom: '1.4rem' }}>
+                    Manually add retained players per team. The retention fee is instantly deducted from that team's auction budget.
+                </p>
+
+                {/* Add Retained Player Form */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1rem', alignItems: 'end' }}>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Team</label>
+                        <select
+                            value={retainTeamId}
+                            onChange={e => setRetainTeamId(e.target.value)}
+                            style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.3)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%' }}
+                        >
+                            <option value="">-- Select Team --</option>
+                            {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Player Name</label>
+                        <input
+                            type="text"
+                            value={retainName}
+                            onChange={e => setRetainName(e.target.value)}
+                            placeholder="e.g. Babar Azam"
+                            style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(244,160,28,0.2)' }}
+                        />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Role</label>
+                        <select
+                            value={retainRole}
+                            onChange={e => setRetainRole(e.target.value)}
+                            style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.2)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%' }}
+                        >
+                            <option value="Batsman">Batsman</option>
+                            <option value="Bowler">Bowler</option>
+                            <option value="All-Rounder">All-Rounder</option>
+                            <option value="Wicket-Keeper">Wicket-Keeper</option>
+                        </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Retention Fee (Rs)</label>
+                        <input
+                            type="number"
+                            value={retainFee}
+                            onChange={e => setRetainFee(e.target.value)}
+                            placeholder="e.g. 20000"
+                            min="0"
+                            style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(244,160,28,0.2)' }}
+                        />
+                    </div>
+                    <div>
+                        <button
+                            className="btn btn-primary"
+                            style={{ width: '100%', opacity: retainLoading ? 0.6 : 1 }}
+                            disabled={retainLoading}
+                            onClick={async () => {
+                                setRetainMsg('');
+                                if (!retainTeamId || !retainName.trim() || !retainFee) {
+                                    setRetainMsg('❌ Please fill all fields.');
+                                    return;
+                                }
+                                setRetainLoading(true);
+                                try {
+                                    await apiCall(`/teams/${retainTeamId}/retain-player`, {
+                                        method: 'POST',
+                                        body: JSON.stringify({
+                                            player_name: retainName.trim(),
+                                            role: retainRole,
+                                            retention_fee: parseFloat(retainFee)
+                                        })
+                                    });
+                                    setRetainMsg(`✅ ${retainName.trim()} retained successfully!`);
+                                    setRetainName(''); setRetainFee('');
+                                    await loadData();
+                                    setTimeout(() => setRetainMsg(''), 3000);
+                                } catch (err) {
+                                    setRetainMsg('❌ ' + err.message);
+                                } finally {
+                                    setRetainLoading(false);
+                                }
+                            }}
+                        >
+                            {retainLoading ? 'Adding...' : '+ Retain Player'}
+                        </button>
+                    </div>
+                </div>
+                {retainMsg && (
+                    <div style={{ padding: '0.6rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem', background: retainMsg.startsWith('✅') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${retainMsg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)'}`, color: retainMsg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)' }}>
+                        {retainMsg}
+                    </div>
+                )}
+
+                {/* Retained Players per Team */}
+                {teams.map(t => {
+                    const retained = players.filter(p => p.sold_to_team_id === t.id && p.status === 'retained');
+                    if (retained.length === 0) return null;
+                    return (
+                        <div key={t.id} style={{ marginBottom: '1rem', background: 'rgba(244,160,28,0.04)', border: '1px solid rgba(244,160,28,0.15)', borderRadius: '10px', padding: '0.85rem 1rem' }}>
+                            <div style={{ fontWeight: '700', color: '#F4A01C', fontSize: '0.9rem', marginBottom: '0.6rem' }}>
+                                🏏 {t.name} — <span style={{ color: 'var(--text-muted)', fontWeight: 400, fontSize: '0.8rem' }}>Remaining: Rs {t.remaining_budget?.toLocaleString()}</span>
+                            </div>
+                            {retained.map(p => (
+                                <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.45rem 0.75rem', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', marginBottom: '0.3rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <span style={{ background: '#F4A01C', color: '#000', fontWeight: '800', fontSize: '0.6rem', padding: '0.1rem 0.4rem', borderRadius: '4px', letterSpacing: '0.5px' }}>RETAINED</span>
+                                        <span style={{ color: 'white', fontWeight: '600', fontSize: '0.88rem' }}>{p.name}</span>
+                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{p.role}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <span style={{ color: 'var(--secondary)', fontWeight: '700', fontSize: '0.85rem' }}>Rs {p.final_price?.toLocaleString()}</span>
+                                        <button
+                                            onClick={async () => {
+                                                if (!window.confirm(`Remove ${p.name} from retention?`)) return;
+                                                try {
+                                                    await apiCall(`/players/${p.id}/unretain`, { method: 'DELETE' });
+                                                    await loadData();
+                                                } catch (err) { alert(err.message); }
+                                            }}
+                                            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid var(--danger)', borderRadius: '4px', color: '#f87171', cursor: 'pointer', fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                                        >Remove</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })}
             </div>
 
         </div>

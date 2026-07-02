@@ -39,6 +39,18 @@ def update_player(player_id: int, player_data: schemas.PlayerCreate, db: Session
     player.team_name = player.team.name if player.team else None
     return player
 
+@router.delete("/{player_id}/unretain")
+def unretain_player(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
+    """Remove a manually retained player (only works on retained status players)."""
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    if player.status != "retained":
+        raise HTTPException(status_code=400, detail="Only retained players can be removed via this endpoint")
+    db.delete(player)
+    db.commit()
+    return {"message": f"{player.name} removed from retention"}
+
 @router.delete("/all")
 def delete_all_players(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
     # Delete all bids first to avoid foreign key constraint errors

@@ -156,7 +156,7 @@ export default function Admin() {
     const handleDeleteAllPlayers = async () => {
         if (!window.confirm("Are you sure you want to delete ALL players? This action cannot be undone.")) return;
         try {
-            const res = await apiCall('/players', {
+            const res = await apiCall('/players/all', {
                 method: 'DELETE'
             });
             alert(res.message);

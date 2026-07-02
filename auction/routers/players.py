@@ -52,7 +52,7 @@ def delete_player(player_id: int, db: Session = Depends(database.get_db), curren
     db.commit()
     return {"message": "Player deleted successfully"}
 
-@router.delete("")
+@router.delete("/all")
 def delete_all_players(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
     # Delete all bids first to avoid foreign key constraint errors
     db.query(models.Bid).delete()

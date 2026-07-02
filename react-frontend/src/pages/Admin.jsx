@@ -748,7 +748,43 @@ export default function Admin() {
             </div>
 
             {/* FULL WIDTH BOTTOM: Teams Dashboard (8 Teams side-by-side) */}
-            <div className="card mt-2 animate-slide-up" style={{ marginTop: '3rem' }}>
+            <div className="card mt-2 animate-slide-up" style={{ marginTop: '3rem', position: 'relative' }}>
+                <style>{`
+                    .team-card-premium {
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        border: 1px solid rgba(255,255,255,0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .team-card-premium:hover {
+                        transform: translateY(-5px);
+                        border-color: rgba(244,160,28,0.4);
+                        box-shadow: 0 10px 30px rgba(244,160,28,0.15);
+                    }
+                    .squad-member-animated {
+                        animation: slideInRight 0.4s ease-out forwards;
+                        padding: 0.5rem 0.75rem;
+                        border-radius: 6px;
+                        background: rgba(255,255,255,0.02);
+                        margin-bottom: 0.4rem;
+                        transition: all 0.2s;
+                        border: 1px solid transparent;
+                    }
+                    .squad-member-animated:hover {
+                        background: rgba(244,160,28,0.08);
+                        border-color: rgba(244,160,28,0.2);
+                        transform: translateX(4px);
+                    }
+                    @keyframes slideInRight {
+                        from { opacity: 0; transform: translateX(10px); }
+                        to { opacity: 1; transform: translateX(0); }
+                    }
+                    .role-icon {
+                        font-size: 0.75rem;
+                        margin-right: 0.4rem;
+                        opacity: 0.8;
+                    }
+                `}</style>
                 <img src="/assets/cricket_teams_banner_1780909290251.png" style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid var(--border)' }} alt="Teams" />
                 <h2 style={{ fontFamily: 'Outfit', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ color: 'var(--secondary)' }}>█</span> Teams Dashboard
@@ -762,28 +798,28 @@ export default function Admin() {
                         const spentPercent = Math.min(100, Math.max(0, (spent / t.total_budget) * 100));
 
                         return (
-                            <div key={t.id} className="card team-card" style={{ padding: '1.25rem', background: 'rgba(15, 23, 42, 0.4)', borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+                            <div key={t.id} className="card team-card-premium" style={{ padding: '1.25rem', background: 'rgba(15, 23, 42, 0.4)' }}>
                                 <div className="team-card-bg">
                                     <img src="/assets/cricket_teams_banner_1780909290251.png" alt="" />
                                 </div>
                                 <div className="team-card-content">
-                                    <h3 style={{ fontSize: '1.2rem', color: 'white', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+                                    <h3 style={{ fontSize: '1.2rem', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
                                         {t.name}
                                     </h3>
                                     
-                                    <div style={{ marginTop: '0.75rem' }}>
+                                    <div style={{ marginTop: '0.75rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px' }}>
                                         <div className="flex-between" style={{ fontSize: '0.85rem' }}>
                                             <span style={{ color: 'var(--text-muted)' }}>Purse Left:</span>
-                                            <strong style={{ color: 'var(--secondary)', fontSize: '1rem' }}>
+                                            <strong style={{ color: 'var(--secondary)', fontSize: '1.05rem', textShadow: '0 0 10px rgba(16,185,129,0.3)' }}>
                                                 ₹{t.remaining_budget?.toLocaleString()}
                                             </strong>
                                         </div>
-                                        <div className="flex-between" style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: 'var(--text-muted)' }}>
-                                            <span>Spent: ₹{spent?.toLocaleString()}</span>
-                                            <span>Total: ₹{t.total_budget?.toLocaleString()}</span>
+                                        <div className="flex-between" style={{ fontSize: '0.75rem', marginTop: '0.35rem', color: 'var(--text-muted)' }}>
+                                            <span>Spent: <span style={{color:'white'}}>₹{spent?.toLocaleString()}</span></span>
+                                            <span>Total: <span style={{color:'white'}}>₹{t.total_budget?.toLocaleString()}</span></span>
                                         </div>
-                                        <div className="budget-bar">
-                                            <div className="budget-fill" style={{ width: `${spentPercent}%` }}></div>
+                                        <div className="budget-bar" style={{ marginTop: '0.5rem', height: '6px' }}>
+                                            <div className="budget-fill" style={{ width: `${spentPercent}%`, background: spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)', boxShadow: `0 0 8px ${spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)'}` }}></div>
                                         </div>
                                     </div>
 
@@ -793,12 +829,12 @@ export default function Admin() {
                                         {t.captain_name ? (
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                    <span style={{ background: 'var(--accent)', color: '#000', fontWeight: 'bold', fontSize: '0.6rem', padding: '0.1rem 0.3rem', borderRadius: '4px' }}>C</span>
+                                                    <span style={{ background: 'var(--accent)', color: '#000', fontWeight: 'bold', fontSize: '0.6rem', padding: '0.1rem 0.3rem', borderRadius: '4px', boxShadow: '0 0 5px rgba(244,160,28,0.5)' }}>C</span>
                                                     <span style={{ fontSize: '0.85rem', color: 'white', fontWeight: 'bold' }}>{t.captain_name}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => handleAssignCaptain(t.id, '')}
-                                                    style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                                                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid var(--danger)', borderRadius: '4px', color: '#f87171', cursor: 'pointer', fontSize: '0.8rem', padding: '0.1rem 0.4rem' }}
                                                     title="Remove Captain"
                                                 >✕</button>
                                             </div>
@@ -837,34 +873,45 @@ export default function Admin() {
                                         )}
                                     </div>
 
-                                    <div className="team-squad-list" style={{ marginTop: '0.75rem' }}>
-                                        <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                                            Squad ({squad.length + (t.captain_name ? 1 : 0)})
+                                    <div className="team-squad-list" style={{ marginTop: '1rem' }}>
+                                        <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                                            <span>Squad Players</span>
+                                            <span style={{ color: 'var(--accent)' }}>{squad.length + (t.captain_name ? 1 : 0)} / 15</span>
                                         </div>
-                                        {t.captain_name && (
-                                            <div className="squad-member" style={{ borderBottom: '1px solid rgba(244,160,28,0.25)', paddingBottom: '0.35rem', marginBottom: '0.35rem' }}>
-                                                <span style={{ color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem' }}>
-                                                    <span style={{ background: 'var(--accent)', color: '#000', fontWeight: 'bold', fontSize: '0.6rem', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>C</span>
-                                                    {t.captain_name}
-                                                </span>
-                                                <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>-</span>
-                                            </div>
-                                        )}
-                                        {squad.map(p => (
-                                            <div key={p.id} className="squad-member">
-                                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
-                                                    {p.name}
-                                                </span>
-                                                <span style={{ fontWeight: 'bold', color: 'white' }}>
-                                                    ₹{p.final_price?.toLocaleString()}
-                                                </span>
-                                            </div>
-                                        ))}
-                                        {squad.length === 0 && !t.captain_name && (
-                                            <div style={{ fontStyle: 'italic', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem 0' }}>
-                                                No players bought yet
-                                            </div>
-                                        )}
+                                        
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                            {t.captain_name && (
+                                                <div className="squad-member-animated flex-between" style={{ borderLeft: '3px solid var(--accent)' }}>
+                                                    <span style={{ color: 'white', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem' }}>
+                                                        <span style={{ background: 'var(--accent)', color: '#000', fontWeight: 'bold', fontSize: '0.6rem', padding: '0.05rem 0.3rem', borderRadius: '4px' }}>C</span>
+                                                        {t.captain_name}
+                                                    </span>
+                                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontStyle: 'italic' }}>Retained</span>
+                                                </div>
+                                            )}
+                                            {squad.map((p, idx) => (
+                                                <div key={p.id} className="squad-member-animated flex-between" style={{ animationDelay: `${idx * 0.05}s` }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                                        <span className="role-icon">
+                                                            {p.role.toLowerCase().includes('bat') ? '🏏' : 
+                                                             p.role.toLowerCase().includes('bowl') ? '🎯' : 
+                                                             p.role.toLowerCase().includes('keep') ? '🧤' : '⚡'}
+                                                        </span>
+                                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '110px', fontSize: '0.85rem', color: '#e2e8f0' }}>
+                                                            {p.name}
+                                                        </span>
+                                                    </div>
+                                                    <span style={{ fontWeight: 'bold', color: 'var(--secondary)', fontSize: '0.85rem' }}>
+                                                        ₹{(p.final_price/1000).toFixed(0)}k
+                                                    </span>
+                                                </div>
+                                            ))}
+                                            {squad.length === 0 && !t.captain_name && (
+                                                <div style={{ fontStyle: 'italic', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1.5rem 0', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                                                    No players bought yet
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

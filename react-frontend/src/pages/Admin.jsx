@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { apiCall, getUser, API_URL } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -980,209 +980,367 @@ export default function Admin() {
             </div>
 
             {/* PRE-AUCTION BUDGET SETUP SECTION */}
-            <div className="card" style={{ marginTop: '2rem', border: '1px solid rgba(16,185,129,0.2)', borderLeft: '4px solid #10b981' }}>
-                <h3 style={{ fontSize: '1.1rem', color: 'white', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    💰 Pre-Auction Team Budget Setup
-                </h3>
-                <p className="text-muted" style={{ fontSize: '0.82rem', marginBottom: '1.4rem' }}>
-                    Set each team's starting budget before the auction begins. Useful when teams have retained players whose fees need to be deducted upfront.
-                </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
-                    {teams.map(t => {
-                        const currentVal = teamBudgets[t.id] !== undefined ? teamBudgets[t.id] : t.total_budget;
-                        const msg = budgetMsg[t.id];
-                        const saving = budgetSaving[t.id];
-                        return (
-                            <div key={t.id} style={{
-                                background: 'rgba(16,185,129,0.04)',
-                                border: '1px solid rgba(16,185,129,0.15)',
-                                borderRadius: '10px',
-                                padding: '0.9rem 1rem'
-                            }}>
-                                <div style={{ fontWeight: '700', color: 'white', fontSize: '0.9rem', marginBottom: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {t.name}
+            <div style={{
+                marginTop: '2rem',
+                position: 'relative',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '1px solid rgba(16,185,129,0.3)',
+                boxShadow: '0 0 40px rgba(16,185,129,0.08), 0 20px 60px rgba(0,0,0,0.3)'
+            }}>
+                {/* Animated background */}
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(135deg, rgba(10,22,40,0.97) 0%, rgba(6,30,25,0.97) 50%, rgba(10,22,40,0.97) 100%)',
+                    zIndex: 0
+                }}/>
+                <div style={{
+                    position: 'absolute', top: '-60px', right: '-60px', width: '220px', height: '220px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)',
+                    animation: 'pulse 4s ease-in-out infinite', zIndex: 0
+                }}/>
+                <div style={{
+                    position: 'absolute', bottom: '-40px', left: '10%', width: '160px', height: '160px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
+                    animation: 'pulse 6s ease-in-out infinite reverse', zIndex: 0
+                }}/>
+                {/* Content */}
+                <div style={{ position: 'relative', zIndex: 1, padding: '1.75rem 2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <div style={{
+                            width: '40px', height: '40px', borderRadius: '10px',
+                            background: 'linear-gradient(135deg, #10b981, #059669)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '1.2rem', boxShadow: '0 0 20px rgba(16,185,129,0.4)'
+                        }}>💰</div>
+                        <div>
+                            <h3 style={{ fontSize: '1.15rem', color: 'white', margin: 0, fontWeight: '800', letterSpacing: '0.3px' }}>
+                                Pre-Auction Team Budget Setup
+                            </h3>
+                            <p style={{ margin: 0, fontSize: '0.78rem', color: 'rgba(16,185,129,0.8)' }}>
+                                Set each team's starting purse before auction begins
+                            </p>
+                        </div>
+                    </div>
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, rgba(16,185,129,0.4), transparent)', margin: '1rem 0 1.5rem' }}/>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '1rem' }}>
+                        {teams.map(t => {
+                            const currentVal = teamBudgets[t.id] !== undefined ? teamBudgets[t.id] : t.total_budget;
+                            const msg = budgetMsg[t.id];
+                            const saving = budgetSaving[t.id];
+                            return (
+                                <div key={t.id} style={{
+                                    background: 'rgba(16,185,129,0.06)',
+                                    border: '1px solid rgba(16,185,129,0.18)',
+                                    borderRadius: '12px',
+                                    padding: '1rem 1.1rem',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'default'
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background='rgba(16,185,129,0.12)'; e.currentTarget.style.borderColor='rgba(16,185,129,0.4)'; e.currentTarget.style.boxShadow='0 0 20px rgba(16,185,129,0.15)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background='rgba(16,185,129,0.06)'; e.currentTarget.style.borderColor='rgba(16,185,129,0.18)'; e.currentTarget.style.boxShadow='none'; }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                        <span style={{ fontWeight: '700', color: 'white', fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>{t.name}</span>
+                                        <span style={{ fontSize: '0.7rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid rgba(16,185,129,0.2)' }}>
+                                            Rs {t.remaining_budget?.toLocaleString()} left
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                        <span style={{ color: '#10b981', fontWeight: '800', fontSize: '0.9rem' }}>Rs</span>
+                                        <input
+                                            type="number"
+                                            value={currentVal}
+                                            min="0"
+                                            onChange={e => setTeamBudgets(prev => ({ ...prev, [t.id]: parseFloat(e.target.value) || 0 }))}
+                                            style={{
+                                                flex: 1, background: 'rgba(0,0,0,0.4)',
+                                                border: '1px solid rgba(16,185,129,0.3)',
+                                                borderRadius: '8px', color: 'white',
+                                                padding: '0.4rem 0.6rem', fontSize: '0.85rem',
+                                                outline: 'none', width: '100%',
+                                                transition: 'border-color 0.2s'
+                                            }}
+                                            onFocus={e => e.target.style.borderColor='rgba(16,185,129,0.7)'}
+                                            onBlur={e => e.target.style.borderColor='rgba(16,185,129,0.3)'}
+                                        />
+                                        <button
+                                            style={{
+                                                padding: '0.4rem 0.8rem', fontSize: '0.78rem',
+                                                background: saving ? 'rgba(16,185,129,0.3)' : 'linear-gradient(135deg,#10b981,#059669)',
+                                                border: 'none', borderRadius: '8px',
+                                                color: 'white', fontWeight: '700', cursor: saving ? 'wait' : 'pointer',
+                                                whiteSpace: 'nowrap', boxShadow: '0 0 12px rgba(16,185,129,0.3)',
+                                                transition: 'all 0.2s', opacity: saving ? 0.7 : 1
+                                            }}
+                                            disabled={saving}
+                                            onMouseEnter={e => { if(!saving) e.currentTarget.style.boxShadow='0 0 20px rgba(16,185,129,0.6)'; }}
+                                            onMouseLeave={e => e.currentTarget.style.boxShadow='0 0 12px rgba(16,185,129,0.3)'}
+                                            onClick={async () => {
+                                                setBudgetSaving(prev => ({ ...prev, [t.id]: true }));
+                                                setBudgetMsg(prev => ({ ...prev, [t.id]: '' }));
+                                                try {
+                                                    await apiCall(`/teams/${t.id}/budget`, { method: 'PUT', body: JSON.stringify({ total_budget: currentVal }) });
+                                                    setBudgetMsg(prev => ({ ...prev, [t.id]: '✅ Saved' }));
+                                                    await loadData();
+                                                    setTimeout(() => setBudgetMsg(prev => ({ ...prev, [t.id]: '' })), 2500);
+                                                } catch (err) {
+                                                    setBudgetMsg(prev => ({ ...prev, [t.id]: '❌ ' + err.message }));
+                                                } finally {
+                                                    setBudgetSaving(prev => ({ ...prev, [t.id]: false }));
+                                                }
+                                            }}
+                                        >{saving ? '...' : 'Save'}</button>
+                                    </div>
+                                    {msg && <div style={{ fontSize: '0.72rem', marginTop: '0.4rem', color: msg.startsWith('✅') ? '#10b981' : 'var(--danger)', fontWeight: '600' }}>{msg}</div>}
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                                    <span style={{ color: 'var(--secondary)', fontWeight: '700', fontSize: '0.85rem' }}>Rs</span>
-                                    <input
-                                        type="number"
-                                        value={currentVal}
-                                        min="0"
-                                        onChange={e => setTeamBudgets(prev => ({ ...prev, [t.id]: parseFloat(e.target.value) || 0 }))}
-                                        style={{
-                                            flex: 1,
-                                            background: 'rgba(0,0,0,0.35)',
-                                            border: '1px solid rgba(16,185,129,0.25)',
-                                            borderRadius: '6px',
-                                            color: 'white',
-                                            padding: '0.35rem 0.5rem',
-                                            fontSize: '0.85rem',
-                                            outline: 'none',
-                                            width: '100%'
-                                        }}
-                                    />
-                                    <button
-                                        className="btn btn-primary"
-                                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', whiteSpace: 'nowrap', opacity: saving ? 0.6 : 1 }}
-                                        disabled={saving}
-                                        onClick={async () => {
-                                            setBudgetSaving(prev => ({ ...prev, [t.id]: true }));
-                                            setBudgetMsg(prev => ({ ...prev, [t.id]: '' }));
-                                            try {
-                                                await apiCall(`/teams/${t.id}/budget`, {
-                                                    method: 'PUT',
-                                                    body: JSON.stringify({ total_budget: currentVal })
-                                                });
-                                                setBudgetMsg(prev => ({ ...prev, [t.id]: '✅ Saved' }));
-                                                await loadData();
-                                                setTimeout(() => setBudgetMsg(prev => ({ ...prev, [t.id]: '' })), 2500);
-                                            } catch (err) {
-                                                setBudgetMsg(prev => ({ ...prev, [t.id]: '❌ ' + err.message }));
-                                            } finally {
-                                                setBudgetSaving(prev => ({ ...prev, [t.id]: false }));
-                                            }
-                                        }}
-                                    >{saving ? '...' : 'Save'}</button>
-                                </div>
-                                {msg && <div style={{ fontSize: '0.72rem', marginTop: '0.35rem', color: msg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)' }}>{msg}</div>}
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
             {/* RETAINED PLAYERS SETUP SECTION */}
-            <div className="card" style={{ marginTop: '2rem', border: '1px solid rgba(244,160,28,0.25)', borderLeft: '4px solid #F4A01C' }}>
-                <h3 style={{ fontSize: '1.1rem', color: 'white', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    🏅 Retained Players Setup
-                </h3>
-                <p className="text-muted" style={{ fontSize: '0.82rem', marginBottom: '1.4rem' }}>
-                    Manually add retained players per team. The retention fee is instantly deducted from that team's auction budget.
-                </p>
-
-                {/* Add Retained Player Form */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1rem', alignItems: 'end' }}>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Team</label>
-                        <select
-                            value={retainTeamId}
-                            onChange={e => setRetainTeamId(e.target.value)}
-                            style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.3)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%' }}
-                        >
-                            <option value="">-- Select Team --</option>
-                            {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                        </select>
-                    </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Player Name</label>
-                        <input
-                            type="text"
-                            value={retainName}
-                            onChange={e => setRetainName(e.target.value)}
-                            placeholder="e.g. Babar Azam"
-                            style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(244,160,28,0.2)' }}
-                        />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Role</label>
-                        <select
-                            value={retainRole}
-                            onChange={e => setRetainRole(e.target.value)}
-                            style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.2)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%' }}
-                        >
-                            <option value="Batsman">Batsman</option>
-                            <option value="Bowler">Bowler</option>
-                            <option value="All-Rounder">All-Rounder</option>
-                            <option value="Wicket-Keeper">Wicket-Keeper</option>
-                        </select>
-                    </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Retention Fee (Rs)</label>
-                        <input
-                            type="number"
-                            value={retainFee}
-                            onChange={e => setRetainFee(e.target.value)}
-                            placeholder="e.g. 20000"
-                            min="0"
-                            style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(244,160,28,0.2)' }}
-                        />
-                    </div>
-                    <div>
-                        <button
-                            className="btn btn-primary"
-                            style={{ width: '100%', opacity: retainLoading ? 0.6 : 1 }}
-                            disabled={retainLoading}
-                            onClick={async () => {
-                                setRetainMsg('');
-                                if (!retainTeamId || !retainName.trim() || !retainFee) {
-                                    setRetainMsg('❌ Please fill all fields.');
-                                    return;
-                                }
-                                setRetainLoading(true);
-                                try {
-                                    await apiCall(`/teams/${retainTeamId}/retain-player`, {
-                                        method: 'POST',
-                                        body: JSON.stringify({
-                                            player_name: retainName.trim(),
-                                            role: retainRole,
-                                            retention_fee: parseFloat(retainFee)
-                                        })
-                                    });
-                                    setRetainMsg(`✅ ${retainName.trim()} retained successfully!`);
-                                    setRetainName(''); setRetainFee('');
-                                    await loadData();
-                                    setTimeout(() => setRetainMsg(''), 3000);
-                                } catch (err) {
-                                    setRetainMsg('❌ ' + err.message);
-                                } finally {
-                                    setRetainLoading(false);
-                                }
-                            }}
-                        >
-                            {retainLoading ? 'Adding...' : '+ Retain Player'}
-                        </button>
-                    </div>
-                </div>
-                {retainMsg && (
-                    <div style={{ padding: '0.6rem 1rem', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem', background: retainMsg.startsWith('✅') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${retainMsg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)'}`, color: retainMsg.startsWith('✅') ? 'var(--secondary)' : 'var(--danger)' }}>
-                        {retainMsg}
-                    </div>
-                )}
-
-                {/* Retained Players per Team */}
-                {teams.map(t => {
-                    const retained = players.filter(p => p.sold_to_team_id === t.id && p.status === 'retained');
-                    if (retained.length === 0) return null;
-                    return (
-                        <div key={t.id} style={{ marginBottom: '1rem', background: 'rgba(244,160,28,0.04)', border: '1px solid rgba(244,160,28,0.15)', borderRadius: '10px', padding: '0.85rem 1rem' }}>
-                            <div style={{ fontWeight: '700', color: '#F4A01C', fontSize: '0.9rem', marginBottom: '0.6rem' }}>
-                                🏏 {t.name} — <span style={{ color: 'var(--text-muted)', fontWeight: 400, fontSize: '0.8rem' }}>Remaining: Rs {t.remaining_budget?.toLocaleString()}</span>
-                            </div>
-                            {retained.map(p => (
-                                <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.45rem 0.75rem', borderRadius: '6px', background: 'rgba(0,0,0,0.2)', marginBottom: '0.3rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                        <span style={{ background: '#F4A01C', color: '#000', fontWeight: '800', fontSize: '0.6rem', padding: '0.1rem 0.4rem', borderRadius: '4px', letterSpacing: '0.5px' }}>RETAINED</span>
-                                        <span style={{ color: 'white', fontWeight: '600', fontSize: '0.88rem' }}>{p.name}</span>
-                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{p.role}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                        <span style={{ color: 'var(--secondary)', fontWeight: '700', fontSize: '0.85rem' }}>Rs {p.final_price?.toLocaleString()}</span>
-                                        <button
-                                            onClick={async () => {
-                                                if (!window.confirm(`Remove ${p.name} from retention?`)) return;
-                                                try {
-                                                    await apiCall(`/players/${p.id}/unretain`, { method: 'DELETE' });
-                                                    await loadData();
-                                                } catch (err) { alert(err.message); }
-                                            }}
-                                            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid var(--danger)', borderRadius: '4px', color: '#f87171', cursor: 'pointer', fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                                        >Remove</button>
-                                    </div>
-                                </div>
-                            ))}
+            <div style={{
+                marginTop: '2rem',
+                position: 'relative',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '1px solid rgba(244,160,28,0.3)',
+                boxShadow: '0 0 40px rgba(244,160,28,0.08), 0 20px 60px rgba(0,0,0,0.3)'
+            }}>
+                {/* Animated background */}
+                <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(135deg, rgba(10,22,40,0.97) 0%, rgba(28,20,8,0.97) 50%, rgba(10,22,40,0.97) 100%)',
+                    zIndex: 0
+                }}/>
+                <div style={{
+                    position: 'absolute', top: '-80px', right: '-40px', width: '250px', height: '250px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(244,160,28,0.12) 0%, transparent 70%)',
+                    animation: 'pulse 5s ease-in-out infinite', zIndex: 0
+                }}/>
+                <div style={{
+                    position: 'absolute', bottom: '-50px', left: '5%', width: '180px', height: '180px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(244,160,28,0.07) 0%, transparent 70%)',
+                    animation: 'pulse 7s ease-in-out infinite reverse', zIndex: 0
+                }}/>
+                <div style={{
+                    position: 'absolute', top: '30%', left: '40%', width: '120px', height: '120px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(244,160,28,0.05) 0%, transparent 70%)',
+                    animation: 'pulse 9s ease-in-out infinite', zIndex: 0
+                }}/>
+                {/* Content */}
+                <div style={{ position: 'relative', zIndex: 1, padding: '1.75rem 2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <div style={{
+                            width: '40px', height: '40px', borderRadius: '10px',
+                            background: 'linear-gradient(135deg, #F4A01C, #d97706)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '1.2rem', boxShadow: '0 0 20px rgba(244,160,28,0.5)'
+                        }}>🏅</div>
+                        <div>
+                            <h3 style={{ fontSize: '1.15rem', color: 'white', margin: 0, fontWeight: '800', letterSpacing: '0.3px' }}>
+                                Retained Players Setup
+                            </h3>
+                            <p style={{ margin: 0, fontSize: '0.78rem', color: 'rgba(244,160,28,0.8)' }}>
+                                Retention fee is instantly deducted from team's auction budget
+                            </p>
                         </div>
-                    );
-                })}
+                    </div>
+                    <div style={{ height: '1px', background: 'linear-gradient(90deg, rgba(244,160,28,0.5), transparent)', margin: '1rem 0 1.5rem' }}/>
+
+                    {/* Form */}
+                    <div style={{
+                        background: 'rgba(244,160,28,0.05)',
+                        border: '1px solid rgba(244,160,28,0.15)',
+                        borderRadius: '12px',
+                        padding: '1.25rem',
+                        marginBottom: '1.5rem'
+                    }}>
+                        <div style={{ fontSize: '0.75rem', color: 'rgba(244,160,28,0.7)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>
+                            ➕ Add Retained Player
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
+                            <div>
+                                <label style={{ fontSize: '0.72rem', color: 'rgba(244,160,28,0.7)', fontWeight: '600', display: 'block', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Team</label>
+                                <select
+                                    value={retainTeamId}
+                                    onChange={e => setRetainTeamId(e.target.value)}
+                                    style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.3)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%', outline: 'none' }}
+                                >
+                                    <option value="">-- Select Team --</option>
+                                    {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '0.72rem', color: 'rgba(244,160,28,0.7)', fontWeight: '600', display: 'block', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Player Name</label>
+                                <input
+                                    type="text" value={retainName}
+                                    onChange={e => setRetainName(e.target.value)}
+                                    placeholder="e.g. Babar Azam"
+                                    style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.25)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%', outline: 'none', boxSizing: 'border-box' }}
+                                    onFocus={e => e.target.style.borderColor='rgba(244,160,28,0.7)'}
+                                    onBlur={e => e.target.style.borderColor='rgba(244,160,28,0.25)'}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '0.72rem', color: 'rgba(244,160,28,0.7)', fontWeight: '600', display: 'block', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Role</label>
+                                <select
+                                    value={retainRole}
+                                    onChange={e => setRetainRole(e.target.value)}
+                                    style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.25)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%', outline: 'none' }}
+                                >
+                                    <option value="Batsman">🏏 Batsman</option>
+                                    <option value="Bowler">🎯 Bowler</option>
+                                    <option value="All-Rounder">⚡ All-Rounder</option>
+                                    <option value="Wicket-Keeper">🧤 Wicket-Keeper</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ fontSize: '0.72rem', color: 'rgba(244,160,28,0.7)', fontWeight: '600', display: 'block', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Retention Fee (Rs)</label>
+                                <input
+                                    type="number" value={retainFee}
+                                    onChange={e => setRetainFee(e.target.value)}
+                                    placeholder="e.g. 20000" min="0"
+                                    style={{ background: 'rgba(10,22,40,0.8)', border: '1px solid rgba(244,160,28,0.25)', color: 'white', borderRadius: '8px', padding: '0.55rem 0.75rem', fontSize: '0.85rem', width: '100%', outline: 'none', boxSizing: 'border-box' }}
+                                    onFocus={e => e.target.style.borderColor='rgba(244,160,28,0.7)'}
+                                    onBlur={e => e.target.style.borderColor='rgba(244,160,28,0.25)'}
+                                />
+                            </div>
+                            <div>
+                                <button
+                                    style={{
+                                        width: '100%', padding: '0.6rem 1rem',
+                                        background: retainLoading ? 'rgba(244,160,28,0.3)' : 'linear-gradient(135deg, #F4A01C, #d97706)',
+                                        border: 'none', borderRadius: '8px',
+                                        color: '#000', fontWeight: '800', fontSize: '0.85rem',
+                                        cursor: retainLoading ? 'wait' : 'pointer',
+                                        boxShadow: '0 0 16px rgba(244,160,28,0.4)',
+                                        transition: 'all 0.25s', opacity: retainLoading ? 0.7 : 1,
+                                        letterSpacing: '0.3px'
+                                    }}
+                                    disabled={retainLoading}
+                                    onMouseEnter={e => { if(!retainLoading) { e.currentTarget.style.boxShadow='0 0 28px rgba(244,160,28,0.7)'; e.currentTarget.style.transform='translateY(-1px)'; }}}
+                                    onMouseLeave={e => { e.currentTarget.style.boxShadow='0 0 16px rgba(244,160,28,0.4)'; e.currentTarget.style.transform='translateY(0)'; }}
+                                    onClick={async () => {
+                                        setRetainMsg('');
+                                        if (!retainTeamId || !retainName.trim() || !retainFee) { setRetainMsg('❌ Please fill all fields.'); return; }
+                                        setRetainLoading(true);
+                                        try {
+                                            await apiCall(`/teams/${retainTeamId}/retain-player`, {
+                                                method: 'POST',
+                                                body: JSON.stringify({ player_name: retainName.trim(), role: retainRole, retention_fee: parseFloat(retainFee) })
+                                            });
+                                            setRetainMsg(`✅ ${retainName.trim()} retained successfully!`);
+                                            setRetainName(''); setRetainFee('');
+                                            await loadData();
+                                            setTimeout(() => setRetainMsg(''), 3000);
+                                        } catch (err) {
+                                            setRetainMsg('❌ ' + err.message);
+                                        } finally {
+                                            setRetainLoading(false);
+                                        }
+                                    }}
+                                >
+                                    {retainLoading ? '⏳ Adding...' : '+ Retain Player'}
+                                </button>
+                            </div>
+                        </div>
+                        {retainMsg && (
+                            <div style={{
+                                marginTop: '0.75rem', padding: '0.6rem 1rem', borderRadius: '8px',
+                                fontSize: '0.85rem', fontWeight: '600',
+                                background: retainMsg.startsWith('✅') ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                                border: `1px solid ${retainMsg.startsWith('✅') ? '#10b981' : 'var(--danger)'}`,
+                                color: retainMsg.startsWith('✅') ? '#10b981' : 'var(--danger)'
+                            }}>
+                                {retainMsg}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Retained Players per Team */}
+                    {teams.map(t => {
+                        const retained = players.filter(p => p.sold_to_team_id === t.id && p.status === 'retained');
+                        if (retained.length === 0) return null;
+                        return (
+                            <div key={t.id} style={{
+                                marginBottom: '1rem',
+                                background: 'rgba(244,160,28,0.05)',
+                                border: '1px solid rgba(244,160,28,0.2)',
+                                borderRadius: '12px',
+                                overflow: 'hidden'
+                            }}>
+                                <div style={{
+                                    background: 'linear-gradient(90deg, rgba(244,160,28,0.15), transparent)',
+                                    padding: '0.65rem 1rem',
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                    borderBottom: '1px solid rgba(244,160,28,0.1)'
+                                }}>
+                                    <span style={{ fontWeight: '800', color: '#F4A01C', fontSize: '0.9rem' }}>
+                                        🏏 {t.name}
+                                    </span>
+                                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', background: 'rgba(0,0,0,0.3)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                                        Remaining: Rs {t.remaining_budget?.toLocaleString()}
+                                    </span>
+                                </div>
+                                <div style={{ padding: '0.5rem 0.75rem' }}>
+                                    {retained.map((p, idx) => (
+                                        <div key={p.id} style={{
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            padding: '0.5rem 0.75rem', borderRadius: '8px',
+                                            background: idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent',
+                                            marginBottom: '0.2rem', transition: 'background 0.2s'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.background='rgba(244,160,28,0.08)'}
+                                        onMouseLeave={e => e.currentTarget.style.background=idx % 2 === 0 ? 'rgba(0,0,0,0.2)' : 'transparent'}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                                <span style={{
+                                                    background: 'linear-gradient(135deg,#F4A01C,#d97706)',
+                                                    color: '#000', fontWeight: '900', fontSize: '0.55rem',
+                                                    padding: '0.1rem 0.4rem', borderRadius: '4px',
+                                                    letterSpacing: '0.8px', boxShadow: '0 0 8px rgba(244,160,28,0.4)'
+                                                }}>RETAINED</span>
+                                                <span style={{ color: 'white', fontWeight: '600', fontSize: '0.88rem' }}>{p.name}</span>
+                                                <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.72rem' }}>{p.role}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <span style={{ color: '#F4A01C', fontWeight: '800', fontSize: '0.88rem' }}>
+                                                    Rs {p.final_price?.toLocaleString()}
+                                                </span>
+                                                <button
+                                                    onClick={async () => {
+                                                        if (!window.confirm(`Remove ${p.name} from retention?`)) return;
+                                                        try {
+                                                            await apiCall(`/players/${p.id}/unretain`, { method: 'DELETE' });
+                                                            await loadData();
+                                                        } catch (err) { alert(err.message); }
+                                                    }}
+                                                    style={{
+                                                        background: 'rgba(239,68,68,0.08)',
+                                                        border: '1px solid rgba(239,68,68,0.4)',
+                                                        borderRadius: '6px', color: '#f87171',
+                                                        cursor: 'pointer', fontSize: '0.72rem',
+                                                        padding: '0.2rem 0.55rem', transition: 'all 0.2s', fontWeight: '600'
+                                                    }}
+                                                    onMouseEnter={e => { e.currentTarget.style.background='rgba(239,68,68,0.2)'; e.currentTarget.style.borderColor='rgba(239,68,68,0.7)'; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.background='rgba(239,68,68,0.08)'; e.currentTarget.style.borderColor='rgba(239,68,68,0.4)'; }}
+                                                >✕ Remove</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
 
         </div>

@@ -55,8 +55,15 @@ export default function Admin() {
         loadData();
     }, [navigate]);
 
-    // Determine current player up for auction
-    const availablePlayers = players.filter(p => p.status === 'available');
+    // Determine current player up for auction - sorted by base_price DESC, then id ASC
+    const availablePlayers = players
+        .filter(p => p.status === 'available')
+        .sort((a, b) => {
+            if (b.base_price !== a.base_price) {
+                return b.base_price - a.base_price;
+            }
+            return a.id - b.id;
+        });
     const curPlayer = availablePlayers.find(p => p.id === selectedPlayerId) || availablePlayers[0] || null;
 
     // Reset inputs when active player changes

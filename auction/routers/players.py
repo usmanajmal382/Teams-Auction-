@@ -134,6 +134,7 @@ def upload_players_csv(file: UploadFile = File(...), db: Session = Depends(datab
             role=role,
             nationality=nationality,
             base_price=base_price,
+            original_base_price=base_price,
             age=age,
             stats=stats,
             photo_url=photo_url,

@@ -2,6 +2,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import Optional, List
 from datetime import datetime
 
@@ -255,7 +256,8 @@ def reset_auction(db: Session = Depends(database.get_db), current_user: models.U
         models.Player.status: "available",
         models.Player.sold_to_team_id: None,
         models.Player.final_price: None,
-        models.Player.sold_at: None
+        models.Player.sold_at: None,
+        models.Player.base_price: func.coalesce(models.Player.original_base_price, models.Player.base_price)
     }, synchronize_session=False)
     db.query(models.Bid).delete()
     db.commit()

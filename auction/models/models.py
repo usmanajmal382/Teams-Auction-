@@ -49,6 +49,7 @@ class Player(Base):
     name = Column(String, index=True)
     role = Column(String) # Batsman, Bowler, All-Rounder, Wicket-Keeper
     base_price = Column(Float)
+    original_base_price = Column(Float, nullable=True)
     nationality = Column(String, nullable=True)
     status = Column(String, default="available") # available, sold, unsold
     sold_to_team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)

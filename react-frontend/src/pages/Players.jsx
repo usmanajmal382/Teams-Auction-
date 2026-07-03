@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -39,12 +39,8 @@ export default function Players() {
     };
 
     useEffect(() => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
         loadPlayers();
-    }, [navigate]);
+    }, []);
 
     const handleEditClick = (player) => {
         setEditingPlayer(player);

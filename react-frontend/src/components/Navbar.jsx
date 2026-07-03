@@ -18,6 +18,8 @@ export default function Navbar() {
             <div className="nav-links">
                 {/* Public links always shown */}
                 <Link to="/" className={isActive('/') ? 'active-link' : ''}>Home</Link>
+                <Link to="/players" className={isActive('/players') ? 'active-link' : ''}>Players</Link>
+                <Link to="/teams" className={isActive('/teams') ? 'active-link' : ''}>Teams</Link>
                 
                 {user ? (
                     <>
@@ -32,9 +34,6 @@ export default function Navbar() {
                         {user.role === 'owner' && (
                             <Link to="/auction" className={isActive('/auction') ? 'active-link' : ''}>Live Auction</Link>
                         )}
-                        {/* Logged in users can view Players & Teams */}
-                        <Link to="/players" className={isActive('/players') ? 'active-link' : ''}>Players</Link>
-                        <Link to="/teams" className={isActive('/teams') ? 'active-link' : ''}>Teams</Link>
                         
                         <button onClick={handleLogout} className="btn-logout" style={{ marginLeft: '1rem' }}>
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginRight: '0.4rem' }}>
@@ -45,8 +44,7 @@ export default function Navbar() {
                     </>
                 ) : (
                     <>
-                        <Link to="/login" className={isActive('/login') ? 'active-link' : ''}>Login</Link>
-                        <Link to="/register" className={isActive('/register') ? 'active-link' : ''} style={{ color: '#F4A01C', fontWeight: 'bold' }}>Register</Link>
+                        <Link to="/login" className={isActive('/login') ? 'active-link' : ''}>Admin Login</Link>
                     </>
                 )}
             </div>

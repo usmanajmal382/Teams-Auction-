@@ -8,12 +8,6 @@ export default function Teams() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const user = getUser();
-        if (!user) {
-            navigate('/');
-            return;
-        }
-
         const loadData = async () => {
             try {
                 const teamsData = await apiCall('/teams');
@@ -26,7 +20,7 @@ export default function Teams() {
         };
 
         loadData();
-    }, [navigate]);
+    }, []);
 
     return (
         <div className="container animate-fade-in">

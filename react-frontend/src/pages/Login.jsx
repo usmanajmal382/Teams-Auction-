@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -77,9 +77,6 @@ export default function Login() {
                     </button>
                 </form>
                 
-                <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                    Don't have an account? <Link to="/register" style={{ color: '#F4A01C', fontWeight: '600', textDecoration: 'none' }}>Register here</Link>
-                </div>
             </div>
         </div>
     );

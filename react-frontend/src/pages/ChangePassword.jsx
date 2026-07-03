@@ -18,7 +18,7 @@ export default function ChangePassword() {
     const [pwError, setPwError] = useState('');
 
     return (
-        <div className="container animate-fade-in" style={{ padding: '2rem 1rem', maxWidth: '100%', margin: '0 auto' }}>
+        <div className="animate-fade-in" style={{ padding: '2rem', width: '100%', margin: '0' }}>
             <div className="card" style={{ marginTop: '2rem', border: '1px solid rgba(244,160,28,0.2)', borderLeft: '4px solid #F4A01C' }}>
                 <h3 style={{ fontSize: '1.3rem', color: 'white', marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     🔑 Change Admin Password

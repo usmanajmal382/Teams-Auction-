@@ -957,7 +957,7 @@ export default function Admin() {
                                                         <span style={{ background: '#F4A01C', color: '#000', fontWeight: '800', fontSize: '0.55rem', padding: '0.05rem 0.3rem', borderRadius: '3px', flexShrink: 0 }}>RET</span>
                                                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px', fontSize: '0.85rem', color: '#e2e8f0' }}>{p.name}</span>
                                                     </div>
-                                                    <span style={{ fontWeight: 'bold', color: '#F4A01C', fontSize: '0.8rem' }}>Rs {(p.final_price/1000).toFixed(0)}k</span>
+                                                    <span style={{ fontWeight: 'bold', color: '#F4A01C', fontSize: '0.8rem' }}>Rs {p.final_price?.toLocaleString()}</span>
                                                 </div>
                                             ))}
                                             {soldInSquad.map((p, idx) => (
@@ -973,7 +973,7 @@ export default function Admin() {
                                                         </span>
                                                     </div>
                                                     <span style={{ fontWeight: 'bold', color: 'var(--secondary)', fontSize: '0.85rem' }}>
-                                                        Rs {(p.final_price/1000).toFixed(0)}k
+                                                        Rs {p.final_price?.toLocaleString()}
                                                     </span>
                                                 </div>
                                             ))}

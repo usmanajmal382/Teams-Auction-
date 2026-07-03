@@ -251,12 +251,12 @@ def get_auction_history(db: Session = Depends(database.get_db)):
 
 @router.post("/auction/reset")
 def reset_auction(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
-    db.query(models.Player).update({
+    db.query(models.Player).filter(models.Player.status != "retained").update({
         models.Player.status: "available",
         models.Player.sold_to_team_id: None,
         models.Player.final_price: None,
         models.Player.sold_at: None
-    })
+    }, synchronize_session=False)
     db.query(models.Bid).delete()
     db.commit()
     return {"message": "Auction has been reset successfully"}

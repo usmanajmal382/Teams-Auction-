@@ -97,6 +97,11 @@ def upload_players_csv(file: UploadFile = File(...), db: Session = Depends(datab
         if not name or name.lower() == 'nan':
             continue
             
+        # Check if player already exists (prevent duplicate of retained players)
+        existing = db.query(models.Player).filter(models.Player.name.ilike(name)).first()
+        if existing:
+            continue
+            
         role = str(row['role']).strip()
         nationality = str(row['nationality']).strip()
         
@@ -138,7 +143,7 @@ def upload_players_csv(file: UploadFile = File(...), db: Session = Depends(datab
         players_added += 1
         
     db.commit()
-    return {"message": f"Successfully uploaded {players_added} players."}
+    return {"message": f"Successfully uploaded {players_added} players. Skipped existing ones to prevent duplicates."}
 
 @router.post("/{player_id}/photo")
 def upload_player_photo(player_id: int, file: UploadFile = File(...), db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):

@@ -31,7 +31,7 @@ export default function SetBudget() {
     }, [navigate]);
 
     return (
-        <div className="container animate-fade-in" style={{ padding: '2rem 1rem', maxWidth: '1000px', margin: '0 auto' }}>
+        <div className="container animate-fade-in" style={{ padding: '2rem 1rem', maxWidth: '100%', margin: '0 auto' }}>
             <div style={{
                 position: 'relative',
                 borderRadius: '16px',

@@ -53,13 +53,19 @@ def unretain_player(player_id: int, db: Session = Depends(database.get_db), curr
 
 @router.delete("/all")
 def delete_all_players(db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
-    # Delete all bids first to avoid foreign key constraint errors
-    db.query(models.Bid).delete()
-    # Delete all players
-    deleted_count = db.query(models.Player).delete()
+    # Find players to delete (not retained)
+    players_to_delete = db.query(models.Player).filter(models.Player.status != "retained").all()
+    player_ids_to_delete = [p.id for p in players_to_delete]
     
-    db.commit()
-    return {"message": f"Successfully deleted all {deleted_count} players. Team budgets are automatically reset."}
+    deleted_count = 0
+    if player_ids_to_delete:
+        # Delete bids for these players to avoid FK constraints
+        db.query(models.Bid).filter(models.Bid.player_id.in_(player_ids_to_delete)).delete(synchronize_session=False)
+        # Delete the players
+        deleted_count = db.query(models.Player).filter(models.Player.id.in_(player_ids_to_delete)).delete(synchronize_session=False)
+        db.commit()
+        
+    return {"message": f"Successfully deleted {deleted_count} non-retained players. Retained players are preserved."}
 
 @router.delete("/{player_id}")
 def delete_player(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):

@@ -22,7 +22,12 @@ export default function Navbar() {
                 {user ? (
                     <>
                         {user.role === 'admin' && (
-                            <Link to="/admin" className={isActive('/admin') ? 'active-link' : ''}>Admin Panel</Link>
+                            <>
+                                <Link to="/admin" className={isActive('/admin') ? 'active-link' : ''}>Admin Panel</Link>
+                                <Link to="/admin/budget" className={isActive('/admin/budget') ? 'active-link' : ''} style={{ fontSize: '0.88rem' }}>💰 Budget</Link>
+                                <Link to="/admin/retained" className={isActive('/admin/retained') ? 'active-link' : ''} style={{ fontSize: '0.88rem' }}>🏅 Retained</Link>
+                                <Link to="/admin/password" className={isActive('/admin/password') ? 'active-link' : ''} style={{ fontSize: '0.88rem' }}>🔑 Password</Link>
+                            </>
                         )}
                         {user.role === 'owner' && (
                             <Link to="/auction" className={isActive('/auction') ? 'active-link' : ''}>Live Auction</Link>

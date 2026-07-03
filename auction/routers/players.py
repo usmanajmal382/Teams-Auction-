@@ -12,7 +12,7 @@ router = APIRouter(prefix="/players", tags=["players"])
 
 @router.get("", response_model=List[schemas.Player])
 def read_players(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
-    players = db.query(models.Player).offset(skip).limit(limit).all()
+    players = db.query(models.Player).order_by(models.Player.id).offset(skip).limit(limit).all()
     for p in players:
         p.team_name = p.team.name if p.team else None
     return players

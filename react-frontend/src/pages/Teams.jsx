@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall, getUser } from '../utils/api';
 
@@ -37,7 +37,7 @@ export default function Teams() {
             
             <div className="grid-3">
                 {teams.map((t, index) => {
-                    const squad = players.filter(p => p.sold_to_team_id === t.id && p.status === 'sold');
+                    const squad = players.filter(p => p.sold_to_team_id === t.id && (p.status === 'sold' || p.status === 'retained'));
                     const spent = t.total_budget - t.remaining_budget;
                     const spentPercent = Math.min(100, Math.max(0, (spent / t.total_budget) * 100));
 
@@ -84,7 +84,12 @@ export default function Teams() {
                                        )}
                                        {squad.map(p => (
                                            <div key={p.id} className="squad-member">
-                                               <span>{p.name}</span>
+                                               <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                   {p.status === 'retained' && (
+                                                       <span style={{ background: '#F4A01C', color: '#000', fontWeight: '800', fontSize: '0.55rem', padding: '0.05rem 0.3rem', borderRadius: '3px' }}>RET</span>
+                                                   )}
+                                                   {p.name}
+                                               </span>
                                                <strong style={{ color: 'white' }}>Rs {p.final_price?.toLocaleString()}</strong>
                                            </div>
                                        ))}

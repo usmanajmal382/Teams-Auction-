@@ -297,6 +297,28 @@ def manual_unsold(player_id: int, db: Session = Depends(database.get_db), curren
     db.commit()
     return {"message": "Player marked as unsold successfully"}
 
+class DowngradeRequest(BaseModel):
+    new_base_price: float
+
+@router.post("/auction/downgrade/{player_id}")
+def downgrade_player(player_id: int, req: DowngradeRequest, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+        
+    if req.new_base_price >= player.base_price:
+        raise HTTPException(status_code=400, detail="New base price must be lower than current base price")
+        
+    player.base_price = req.new_base_price
+    player.status = "available"
+    player.sold_at = None
+    
+    # Remove any existing bids just in case
+    db.query(models.Bid).filter(models.Bid.player_id == player_id).delete()
+    
+    db.commit()
+    return {"message": f"Player downgraded to {req.new_base_price} and returned to queue"}
+
 @router.post("/auction/rtm/{player_id}")
 async def process_rtm(player_id: int, req: RTMRequest, use_rtm: bool, db: Session = Depends(database.get_db)):
     global current_active_player_id

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { apiCall, getUser, API_URL } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -119,6 +119,21 @@ export default function Admin() {
             setSelectedPlayerId(null);
             await loadData();
             alert(`${curPlayer.name} marked as Unsold.`);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const handleDowngrade = async (newPrice) => {
+        if (!curPlayer) return;
+        try {
+            await apiCall(`/auction/downgrade/${curPlayer.id}`, {
+                method: 'POST',
+                body: JSON.stringify({ new_base_price: newPrice })
+            });
+            setSelectedPlayerId(null);
+            await loadData();
+            alert(`${curPlayer.name} shifted to Rs ${newPrice.toLocaleString()} base price queue.`);
         } catch (err) {
             alert(err.message);
         }
@@ -617,6 +632,34 @@ export default function Admin() {
                                             </button>
                                         </div>
                                     </form>
+
+                                    {/* Downgrade & Re-queue Options */}
+                                    {curPlayer.base_price > 1000 && (
+                                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(244,160,28,0.06)', border: '1px solid rgba(244,160,28,0.2)', borderRadius: '12px' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#F4A01C', fontWeight: 'bold', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                                No Bids? Downgrade Base Price & Re-queue
+                                            </div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                {[5000, 4000, 3000, 2500, 2000, 1500, 1000].filter(p => p < curPlayer.base_price).map(p => (
+                                                    <button type="button" key={p} onClick={() => handleDowngrade(p)} style={{
+                                                        padding: '0.5rem 0.75rem',
+                                                        background: 'rgba(244,160,28,0.1)',
+                                                        border: '1px solid rgba(244,160,28,0.4)',
+                                                        borderRadius: '8px',
+                                                        color: '#F4A01C', fontWeight: 600, fontSize: '0.75rem',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.2)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.6)'; }}
+                                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.1)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.4)'; }}
+                                                    >
+                                                        Shift to Rs {p.toLocaleString()}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

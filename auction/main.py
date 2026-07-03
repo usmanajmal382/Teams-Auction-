@@ -5,8 +5,17 @@ from .models import models, database
 from .routers import auth, players, teams, auction
 import os
 
+from sqlalchemy import text
 # Create DB tables
 models.Base.metadata.create_all(bind=database.engine)
+
+try:
+    with database.engine.connect() as conn:
+        conn.execute(text("ALTER TABLE players ADD COLUMN original_base_price FLOAT;"))
+        conn.execute(text("UPDATE players SET original_base_price = base_price WHERE original_base_price IS NULL;"))
+        conn.commit()
+except Exception:
+    pass
 
 def auto_seed():
     """Auto-create admin + teams if DB is empty (first deploy)."""

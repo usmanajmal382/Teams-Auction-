@@ -299,6 +299,32 @@ def manual_unsold(player_id: int, db: Session = Depends(database.get_db), curren
     db.commit()
     return {"message": "Player marked as unsold successfully"}
 
+@router.post("/auction/undo/{player_id}")
+def undo_player_result(player_id: int, db: Session = Depends(database.get_db), current_user: models.User = Depends(require_role(["admin"]))):
+    """Undo last sold/unsold action — reverts player to available and restores team budget."""
+    player = db.query(models.Player).filter(models.Player.id == player_id).first()
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+
+    if player.status not in ("sold", "unsold"):
+        raise HTTPException(status_code=400, detail="Only sold or unsold players can be undone.")
+
+    # Restore team budget if the player was sold
+    if player.status == "sold" and player.sold_to_team_id and player.final_price:
+        team = db.query(models.Team).filter(models.Team.id == player.sold_to_team_id).first()
+        if team:
+            team.spent_budget = max(0, team.spent_budget - player.final_price)
+
+    # Reset player back to available queue
+    prev_status = player.status
+    player.status = "available"
+    player.sold_to_team_id = None
+    player.final_price = None
+    player.sold_at = None
+
+    db.commit()
+    return {"message": f"'{player.name}' undo ho gaya — wapas auction queue mein aa gaya hai."}
+
 class DowngradeRequest(BaseModel):
     new_base_price: float
 

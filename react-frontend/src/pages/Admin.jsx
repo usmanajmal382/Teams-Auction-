@@ -28,6 +28,8 @@ export default function Admin() {
     const [retainFee, setRetainFee] = useState('');
     const [retainMsg, setRetainMsg] = useState('');
     const [retainLoading, setRetainLoading] = useState(false);
+    // Tracks last sold/unsold action so admin can undo it immediately
+    const [lastAction, setLastAction] = useState(null); // { id, name, status, teamName, price }
     const navigate = useNavigate();
 
     const loadData = async () => {
@@ -100,6 +102,7 @@ export default function Admin() {
         }
 
         try {
+            const savedPlayer = { id: curPlayer.id, name: curPlayer.name, status: 'sold', teamName: targetTeam.name, price };
             await apiCall(`/auction/sold/${curPlayer.id}`, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -107,7 +110,7 @@ export default function Admin() {
                     final_price: price
                 })
             });
-            // Reset selected override and refresh lists
+            setLastAction(savedPlayer);
             setSelectedPlayerId(null);
             await loadData();
             alert(`${curPlayer.name} sold to ${targetTeam.name} for Rs ${price.toLocaleString()}!`);
@@ -119,10 +122,11 @@ export default function Admin() {
     const handleUnsold = async () => {
         if (!curPlayer) return;
         try {
+            const savedPlayer = { id: curPlayer.id, name: curPlayer.name, status: 'unsold', teamName: null, price: null };
             await apiCall(`/auction/unsold/${curPlayer.id}`, {
                 method: 'POST'
             });
-            // Reset selected override and refresh lists
+            setLastAction(savedPlayer);
             setSelectedPlayerId(null);
             await loadData();
             alert(`${curPlayer.name} marked as Unsold.`);
@@ -149,7 +153,7 @@ export default function Admin() {
     const handleReset = async () => {
         setShowResetConfirm(false);
         try {
-            await apiCall('/auction/reset', { 
+            await apiCall('/auction/reset', {
                 method: 'POST',
                 body: JSON.stringify({})
             });
@@ -277,13 +281,13 @@ export default function Admin() {
                     <p className="text-muted">Run and record verbal room bidding for the live cricket auction</p>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <button 
-                        className="btn btn-primary" 
+                    <button
+                        className="btn btn-primary"
                         onClick={handleDownloadPdf}
                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}
                     >
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         Download PDF Results
                     </button>
@@ -299,7 +303,7 @@ export default function Admin() {
                         </div>
                     ) : (
                         <button className="btn btn-danger" onClick={() => setShowResetConfirm(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12"/></svg>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" /></svg>
                             Reset Auction
                         </button>
                     )}
@@ -315,7 +319,7 @@ export default function Admin() {
             <div className="grid-2">
                 {/* LEFT SIDE: Current Player up for auction & Auction History */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    
+
                     {/* Current Player Card — Premium Redesign */}
                     <div className="card animate-slide-up" style={{
                         borderLeft: '4px solid var(--primary)',
@@ -364,319 +368,388 @@ export default function Admin() {
                         </div>
 
                         <div style={{ padding: '1.5rem' }}>
-                        {curPlayer ? (
-                            <div>
-                                {/* Top Section: Avatar + Core Info */}
-                                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+                            {curPlayer ? (
+                                <div>
+                                    {/* Top Section: Avatar + Core Info */}
+                                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
 
-                                    {/* Player Avatar */}
-                                    <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                                        <div style={{
-                                            width: '110px', height: '110px',
-                                            borderRadius: '16px',
-                                            background: 'linear-gradient(135deg, #1a4b8c, #0a1628)',
-                                            border: '2px solid var(--accent)',
-                                            overflow: 'hidden',
-                                            position: 'relative',
-                                            boxShadow: '0 8px 32px rgba(244,160,28,0.2)'
-                                        }}>
-                                            {curPlayer.photo_url ? (
-                                                <img src={curPlayer.photo_url} alt={curPlayer.name}
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                            ) : (
-                                                <div style={{
-                                                    width: '100%', height: '100%',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    fontSize: '2.5rem', fontFamily: 'Outfit', fontWeight: 900,
-                                                    color: 'var(--accent)',
-                                                    background: 'linear-gradient(135deg, rgba(26,75,140,0.3), rgba(10,22,40,0.8))'
+                                        {/* Player Avatar */}
+                                        <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                                            <div style={{
+                                                width: '110px', height: '110px',
+                                                borderRadius: '16px',
+                                                background: 'linear-gradient(135deg, #1a4b8c, #0a1628)',
+                                                border: '2px solid var(--accent)',
+                                                overflow: 'hidden',
+                                                position: 'relative',
+                                                boxShadow: '0 8px 32px rgba(244,160,28,0.2)'
+                                            }}>
+                                                {curPlayer.photo_url ? (
+                                                    <img src={curPlayer.photo_url} alt={curPlayer.name}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '100%', height: '100%',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '2.5rem', fontFamily: 'Outfit', fontWeight: 900,
+                                                        color: 'var(--accent)',
+                                                        background: 'linear-gradient(135deg, rgba(26,75,140,0.3), rgba(10,22,40,0.8))'
+                                                    }}>
+                                                        {curPlayer.name?.charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {/* Photo upload */}
+                                            <form onSubmit={handlePhotoUpload} style={{ textAlign: 'center', width: '110px' }}>
+                                                <label style={{
+                                                    display: 'block', fontSize: '0.65rem',
+                                                    color: 'var(--text-muted)', marginBottom: '0.2rem', cursor: 'pointer'
                                                 }}>
-                                                    {curPlayer.name?.charAt(0).toUpperCase()}
-                                                </div>
-                                            )}
-                                        </div>
-                                        {/* Photo upload */}
-                                        <form onSubmit={handlePhotoUpload} style={{ textAlign: 'center', width: '110px' }}>
-                                            <label style={{
-                                                display: 'block', fontSize: '0.65rem',
-                                                color: 'var(--text-muted)', marginBottom: '0.2rem', cursor: 'pointer'
-                                            }}>
-                                                📷 {curPlayer.photo_url ? 'Replace' : 'Upload Photo'}
-                                            </label>
-                                            <input type="file" accept="image/*"
-                                                onChange={e => setPhotoFile(e.target.files[0])}
-                                                style={{ display: 'none' }} id="photo-upload-input" />
-                                            <label htmlFor="photo-upload-input" style={{
-                                                display: 'block', fontSize: '0.65rem',
-                                                background: 'rgba(255,255,255,0.06)', border: '1px dashed var(--border)',
-                                                borderRadius: '4px', padding: '0.25rem', cursor: 'pointer',
-                                                color: 'var(--text-muted)', textAlign: 'center'
-                                            }}>
-                                                {photoFile ? photoFile.name.slice(0, 12) + '...' : 'Choose file'}
-                                            </label>
-                                            {photoFile && (
-                                                <button type="submit" className="btn btn-primary"
-                                                    style={{ width: '100%', padding: '0.25rem', fontSize: '0.65rem', marginTop: '0.25rem' }}
-                                                    disabled={photoUploading}>
-                                                    {photoUploading ? '⏳' : '✓ Upload'}
-                                                </button>
-                                            )}
-                                        </form>
-                                    </div>
-
-                                    {/* Core Info */}
-                                    <div style={{ flex: 1, minWidth: '180px' }}>
-                                        <div style={{ marginBottom: '0.4rem' }}>
-                                            <h3 style={{
-                                                fontFamily: 'Outfit', fontSize: 'clamp(1.3rem, 3vw, 1.9rem)',
-                                                fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '0.4rem'
-                                            }}>{curPlayer.name}</h3>
+                                                    📷 {curPlayer.photo_url ? 'Replace' : 'Upload Photo'}
+                                                </label>
+                                                <input type="file" accept="image/*"
+                                                    onChange={e => setPhotoFile(e.target.files[0])}
+                                                    style={{ display: 'none' }} id="photo-upload-input" />
+                                                <label htmlFor="photo-upload-input" style={{
+                                                    display: 'block', fontSize: '0.65rem',
+                                                    background: 'rgba(255,255,255,0.06)', border: '1px dashed var(--border)',
+                                                    borderRadius: '4px', padding: '0.25rem', cursor: 'pointer',
+                                                    color: 'var(--text-muted)', textAlign: 'center'
+                                                }}>
+                                                    {photoFile ? photoFile.name.slice(0, 12) + '...' : 'Choose file'}
+                                                </label>
+                                                {photoFile && (
+                                                    <button type="submit" className="btn btn-primary"
+                                                        style={{ width: '100%', padding: '0.25rem', fontSize: '0.65rem', marginTop: '0.25rem' }}
+                                                        disabled={photoUploading}>
+                                                        {photoUploading ? '⏳' : '✓ Upload'}
+                                                    </button>
+                                                )}
+                                            </form>
                                         </div>
 
-                                        {/* Badges row */}
-                                        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                                            <span className={`badge-role ${getRoleClass(curPlayer.role)}`}
-                                                style={{ fontSize: '0.75rem', fontWeight: 700 }}>
-                                                🏏 {curPlayer.role}
-                                            </span>
-                                            {curPlayer.nationality && (
-                                                <span style={{
-                                                    background: 'rgba(255,255,255,0.08)', color: '#cbd5e1',
-                                                    padding: '0.2rem 0.6rem', borderRadius: '20px',
-                                                    fontSize: '0.72rem', border: '1px solid rgba(255,255,255,0.12)'
-                                                }}>
-                                                    🌍 {curPlayer.nationality}
+                                        {/* Core Info */}
+                                        <div style={{ flex: 1, minWidth: '180px' }}>
+                                            <div style={{ marginBottom: '0.4rem' }}>
+                                                <h3 style={{
+                                                    fontFamily: 'Outfit', fontSize: 'clamp(1.3rem, 3vw, 1.9rem)',
+                                                    fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '0.4rem'
+                                                }}>{curPlayer.name}</h3>
+                                            </div>
+
+                                            {/* Badges row */}
+                                            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                                                <span className={`badge-role ${getRoleClass(curPlayer.role)}`}
+                                                    style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                                                    🏏 {curPlayer.role}
                                                 </span>
-                                            )}
-                                            {curPlayer.age && (
-                                                <span style={{
-                                                    background: 'rgba(255,255,255,0.08)', color: '#cbd5e1',
-                                                    padding: '0.2rem 0.6rem', borderRadius: '20px',
-                                                    fontSize: '0.72rem', border: '1px solid rgba(255,255,255,0.12)'
-                                                }}>
-                                                    🎂 Age {curPlayer.age}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Base price highlight */}
-                                        <div style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                                            background: 'linear-gradient(90deg, rgba(244,160,28,0.15), rgba(244,160,28,0.05))',
-                                            border: '1px solid rgba(244,160,28,0.3)',
-                                            borderRadius: '10px', padding: '0.5rem 1rem'
-                                        }}>
-                                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Base Price</span>
-                                            <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.3rem', color: 'var(--accent)' }}>
-                                                Rs {curPlayer.base_price?.toLocaleString()}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Stats Section */}
-                                {curPlayer.stats && (
-                                    <div style={{
-                                        background: 'rgba(0,0,0,0.25)',
-                                        border: '1px solid rgba(255,255,255,0.07)',
-                                        borderRadius: '12px',
-                                        padding: '1rem',
-                                        marginBottom: '1.5rem'
-                                    }}>
-                                        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)', fontWeight: 700, marginBottom: '0.5rem' }}>
-                                            📊 Player Stats
-                                        </div>
-                                        <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                                            {curPlayer.stats}
-                                        </p>
-                                    </div>
-                                )}
-
-                                {/* Divider */}
-                                <div style={{ height: '1px', background: 'linear-gradient(90deg, var(--accent), transparent)', marginBottom: '1.25rem', opacity: 0.3 }} />
-
-                                {/* ── Record Bid Result ── */}
-                                <div className="auction-card-enter" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
-                                        <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text-muted)', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                                            🔨 Record Bid Result
-                                        </span>
-                                        <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
-                                    </div>
-
-                                    <form onSubmit={handleSold} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-
-                                        {/* Team Chip Selector */}
-                                        <div>
-                                            <label style={{
-                                                fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.8px',
-                                                textTransform: 'uppercase', color: 'var(--text-muted)',
-                                                display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem'
-                                            }}>
-                                                <span style={{ color: 'var(--accent)' }}>🏆</span> Winning Team
-                                                {selectedTeamId && (
-                                                    <span style={{ marginLeft: 'auto', color: 'var(--secondary)', fontSize: '0.68rem', fontWeight: 600 }}>
-                                                        ✓ Selected
+                                                {curPlayer.nationality && (
+                                                    <span style={{
+                                                        background: 'rgba(255,255,255,0.08)', color: '#cbd5e1',
+                                                        padding: '0.2rem 0.6rem', borderRadius: '20px',
+                                                        fontSize: '0.72rem', border: '1px solid rgba(255,255,255,0.12)'
+                                                    }}>
+                                                        🌍 {curPlayer.nationality}
                                                     </span>
                                                 )}
-                                            </label>
-                                            <div className="team-chip-grid">
-                                                {teams.map(t => (
-                                                    <button
-                                                        key={t.id}
-                                                        type="button"
-                                                        className={`team-chip ${String(selectedTeamId) === String(t.id) ? 'selected' : ''}`}
-                                                        onClick={() => setSelectedTeamId(t.id)}
-                                                    >
-                                                        <span className="team-chip-name">{t.name}</span>
-                                                        <span className="team-chip-purse">Rs {t.remaining_budget?.toLocaleString()}</span>
-                                                    </button>
-                                                ))}
+                                                {curPlayer.age && (
+                                                    <span style={{
+                                                        background: 'rgba(255,255,255,0.08)', color: '#cbd5e1',
+                                                        padding: '0.2rem 0.6rem', borderRadius: '20px',
+                                                        fontSize: '0.72rem', border: '1px solid rgba(255,255,255,0.12)'
+                                                    }}>
+                                                        🎂 Age {curPlayer.age}
+                                                    </span>
+                                                )}
                                             </div>
-                                            {/* Hidden required input for form validation */}
-                                            <input
-                                                type="text"
-                                                value={selectedTeamId}
-                                                required
-                                                readOnly
-                                                style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }}
-                                            />
-                                        </div>
 
-                                        {/* Price Stepper */}
-                                        <div>
-                                            <label style={{
-                                                fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.8px',
-                                                textTransform: 'uppercase', color: 'var(--text-muted)',
-                                                display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem'
+                                            {/* Base price highlight */}
+                                            <div style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                                                background: 'linear-gradient(90deg, rgba(244,160,28,0.15), rgba(244,160,28,0.05))',
+                                                border: '1px solid rgba(244,160,28,0.3)',
+                                                borderRadius: '10px', padding: '0.5rem 1rem'
                                             }}>
-                                                <span style={{ color: 'var(--accent)' }}>Rs </span> Final Sold Price
-                                                <span style={{ marginLeft: 'auto', fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>
-                                                    Min Rs {curPlayer.base_price?.toLocaleString()}
+                                                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Base Price</span>
+                                                <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.3rem', color: 'var(--accent)' }}>
+                                                    Rs {curPlayer.base_price?.toLocaleString()}
                                                 </span>
-                                            </label>
-                                            <div className="price-stepper">
-                                                <button type="button" className="price-stepper-btn"
-                                                    onClick={() => setSoldPrice(v => Math.max(curPlayer.base_price, (parseInt(v)||0) - 1000))}>
-                                                    −
-                                                </button>
-                                                <input
-                                                    type="number"
-                                                    value={soldPrice}
-                                                    onChange={e => setSoldPrice(e.target.value)}
-                                                    placeholder={`${curPlayer.base_price}`}
-                                                    required
-                                                    min={curPlayer.base_price}
-                                                />
-                                                <button type="button" className="price-stepper-btn"
-                                                    onClick={() => setSoldPrice(v => (parseInt(v)||curPlayer.base_price) + 1000)}>
-                                                    +
-                                                </button>
-                                            </div>
-                                            {/* Quick Increment chips */}
-                                            <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                                                {[1000, 2000, 5000, 10000].map(amt => (
-                                                    <button key={amt} type="button"
-                                                        onClick={() => setSoldPrice(v => (parseInt(v) || curPlayer.base_price) + amt)}
-                                                        style={{
-                                                            background: 'rgba(244,160,28,0.08)',
-                                                            border: '1px solid rgba(244,160,28,0.2)',
-                                                            borderRadius: '6px', color: 'var(--accent)',
-                                                            fontSize: '0.7rem', fontWeight: 700,
-                                                            padding: '0.2rem 0.5rem', cursor: 'pointer',
-                                                            transition: 'all 0.15s'
-                                                        }}
-                                                        onMouseEnter={e => e.target.style.background = 'rgba(244,160,28,0.2)'}
-                                                        onMouseLeave={e => e.target.style.background = 'rgba(244,160,28,0.08)'}
-                                                    >+{(amt/1000)}K</button>
-                                                ))}
-                                                <button type="button"
-                                                    onClick={() => setSoldPrice(curPlayer.base_price)}
-                                                    style={{
-                                                        background: 'rgba(255,255,255,0.05)',
-                                                        border: '1px solid rgba(255,255,255,0.1)',
-                                                        borderRadius: '6px', color: 'var(--text-muted)',
-                                                        fontSize: '0.7rem', padding: '0.2rem 0.5rem',
-                                                        cursor: 'pointer'
-                                                    }}>Reset</button>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        {/* Action Buttons */}
-                                        <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.2fr', gap: '0.75rem', marginTop: '0.25rem' }}>
-                                            <button type="submit" style={{
-                                                padding: '0.9rem',
-                                                background: 'linear-gradient(90deg, #059669, #10b981)',
-                                                border: 'none', borderRadius: '12px',
-                                                color: 'white', fontWeight: 800, fontSize: '1rem',
-                                                cursor: 'pointer', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                                                boxShadow: '0 4px 20px rgba(16,185,129,0.3)',
-                                                transition: 'all 0.2s',
-                                                fontFamily: 'Outfit'
-                                            }}
-                                                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(16,185,129,0.45)'; }}
-                                                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(16,185,129,0.3)'; }}
-                                            >
-                                                🏆 SOLD
-                                            </button>
-                                            <button type="button" onClick={handleUnsold} style={{
-                                                padding: '0.9rem',
-                                                background: 'linear-gradient(90deg, #991b1b, #ef4444)',
-                                                border: 'none', borderRadius: '12px',
-                                                color: 'white', fontWeight: 800, fontSize: '0.88rem',
-                                                cursor: 'pointer', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center', gap: '0.3rem',
-                                                boxShadow: '0 4px 20px rgba(239,68,68,0.25)',
-                                                transition: 'all 0.2s',
-                                                fontFamily: 'Outfit'
-                                            }}
-                                                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(239,68,68,0.4)'; }}
-                                                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(239,68,68,0.25)'; }}
-                                            >
-                                                ✕ UNSOLD
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    {/* Downgrade & Re-queue Options */}
-                                    {curPlayer.base_price > 1000 && (
-                                        <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(244,160,28,0.06)', border: '1px solid rgba(244,160,28,0.2)', borderRadius: '12px' }}>
-                                            <div style={{ fontSize: '0.8rem', color: '#F4A01C', fontWeight: 'bold', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                                No Bids? Downgrade Base Price & Re-queue
+                                    {/* Stats Section */}
+                                    {curPlayer.stats && (
+                                        <div style={{
+                                            background: 'rgba(0,0,0,0.25)',
+                                            border: '1px solid rgba(255,255,255,0.07)',
+                                            borderRadius: '12px',
+                                            padding: '1rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent)', fontWeight: 700, marginBottom: '0.5rem' }}>
+                                                📊 Player Stats
                                             </div>
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                                {[5000, 4000, 3000, 2500, 2000, 1500, 1000].filter(p => p < curPlayer.base_price).map(p => (
-                                                    <button type="button" key={p} onClick={() => handleDowngrade(p)} style={{
-                                                        padding: '0.5rem 0.75rem',
-                                                        background: 'rgba(244,160,28,0.1)',
-                                                        border: '1px solid rgba(244,160,28,0.4)',
-                                                        borderRadius: '8px',
-                                                        color: '#F4A01C', fontWeight: 600, fontSize: '0.75rem',
-                                                        cursor: 'pointer',
-                                                        transition: 'all 0.2s'
-                                                    }}
-                                                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.2)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.6)'; }}
-                                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.1)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.4)'; }}
-                                                    >
-                                                        Shift to Rs {p.toLocaleString()}
-                                                    </button>
-                                                ))}
-                                            </div>
+                                            <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                                                {curPlayer.stats}
+                                            </p>
                                         </div>
                                     )}
-                                </div>
-                            </div>
 
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
-                                <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginBottom: '1rem', opacity: 0.5 }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>All players have been auctioned!</p>
-                                <p style={{ fontSize: '0.9rem', marginTop: '0.25rem' }}>Upload a new player CSV, or click the Reset button to start again.</p>
-                            </div>
-                        )}
+                                    {/* Divider */}
+                                    <div style={{ height: '1px', background: 'linear-gradient(90deg, var(--accent), transparent)', marginBottom: '1.25rem', opacity: 0.3 }} />
+
+                                    {/* ── Record Bid Result ── */}
+                                    <div className="auction-card-enter" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                                            <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text-muted)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                                🔨 Record Bid Result
+                                            </span>
+                                            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+                                        </div>
+
+                                        <form onSubmit={handleSold} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+                                            {/* Team Chip Selector */}
+                                            <div>
+                                                <label style={{
+                                                    fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.8px',
+                                                    textTransform: 'uppercase', color: 'var(--text-muted)',
+                                                    display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem'
+                                                }}>
+                                                    <span style={{ color: 'var(--accent)' }}>🏆</span> Winning Team
+                                                    {selectedTeamId && (
+                                                        <span style={{ marginLeft: 'auto', color: 'var(--secondary)', fontSize: '0.68rem', fontWeight: 600 }}>
+                                                            ✓ Selected
+                                                        </span>
+                                                    )}
+                                                </label>
+                                                <div className="team-chip-grid">
+                                                    {teams.map(t => (
+                                                        <button
+                                                            key={t.id}
+                                                            type="button"
+                                                            className={`team-chip ${String(selectedTeamId) === String(t.id) ? 'selected' : ''}`}
+                                                            onClick={() => setSelectedTeamId(t.id)}
+                                                        >
+                                                            <span className="team-chip-name">{t.name}</span>
+                                                            <span className="team-chip-purse">Rs {t.remaining_budget?.toLocaleString()}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                {/* Hidden required input for form validation */}
+                                                <input
+                                                    type="text"
+                                                    value={selectedTeamId}
+                                                    required
+                                                    readOnly
+                                                    style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }}
+                                                />
+                                            </div>
+
+                                            {/* Price Stepper */}
+                                            <div>
+                                                <label style={{
+                                                    fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.8px',
+                                                    textTransform: 'uppercase', color: 'var(--text-muted)',
+                                                    display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem'
+                                                }}>
+                                                    <span style={{ color: 'var(--accent)' }}>Rs </span> Final Sold Price
+                                                    <span style={{ marginLeft: 'auto', fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>
+                                                        Min Rs {curPlayer.base_price?.toLocaleString()}
+                                                    </span>
+                                                </label>
+                                                <div className="price-stepper">
+                                                    <button type="button" className="price-stepper-btn"
+                                                        onClick={() => setSoldPrice(v => Math.max(curPlayer.base_price, (parseInt(v) || 0) - 1000))}>
+                                                        −
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        value={soldPrice}
+                                                        onChange={e => setSoldPrice(e.target.value)}
+                                                        placeholder={`${curPlayer.base_price}`}
+                                                        required
+                                                        min={curPlayer.base_price}
+                                                    />
+                                                    <button type="button" className="price-stepper-btn"
+                                                        onClick={() => setSoldPrice(v => (parseInt(v) || curPlayer.base_price) + 1000)}>
+                                                        +
+                                                    </button>
+                                                </div>
+                                                {/* Quick Increment chips */}
+                                                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                                                    {[1000, 2000, 5000, 10000].map(amt => (
+                                                        <button key={amt} type="button"
+                                                            onClick={() => setSoldPrice(v => (parseInt(v) || curPlayer.base_price) + amt)}
+                                                            style={{
+                                                                background: 'rgba(244,160,28,0.08)',
+                                                                border: '1px solid rgba(244,160,28,0.2)',
+                                                                borderRadius: '6px', color: 'var(--accent)',
+                                                                fontSize: '0.7rem', fontWeight: 700,
+                                                                padding: '0.2rem 0.5rem', cursor: 'pointer',
+                                                                transition: 'all 0.15s'
+                                                            }}
+                                                            onMouseEnter={e => e.target.style.background = 'rgba(244,160,28,0.2)'}
+                                                            onMouseLeave={e => e.target.style.background = 'rgba(244,160,28,0.08)'}
+                                                        >+{(amt / 1000)}K</button>
+                                                    ))}
+                                                    <button type="button"
+                                                        onClick={() => setSoldPrice(curPlayer.base_price)}
+                                                        style={{
+                                                            background: 'rgba(255,255,255,0.05)',
+                                                            border: '1px solid rgba(255,255,255,0.1)',
+                                                            borderRadius: '6px', color: 'var(--text-muted)',
+                                                            fontSize: '0.7rem', padding: '0.2rem 0.5rem',
+                                                            cursor: 'pointer'
+                                                        }}>Reset</button>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div style={{ display: 'grid', gridTemplateColumns: '3fr 1.2fr', gap: '0.75rem', marginTop: '0.25rem' }}>
+                                                <button type="submit" style={{
+                                                    padding: '0.9rem',
+                                                    background: 'linear-gradient(90deg, #059669, #10b981)',
+                                                    border: 'none', borderRadius: '12px',
+                                                    color: 'white', fontWeight: 800, fontSize: '1rem',
+                                                    cursor: 'pointer', display: 'flex',
+                                                    alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                                    boxShadow: '0 4px 20px rgba(16,185,129,0.3)',
+                                                    transition: 'all 0.2s',
+                                                    fontFamily: 'Outfit'
+                                                }}
+                                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(16,185,129,0.45)'; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(16,185,129,0.3)'; }}
+                                                >
+                                                    🏆 SOLD
+                                                </button>
+                                                <button type="button" onClick={handleUnsold} style={{
+                                                    padding: '0.9rem',
+                                                    background: 'linear-gradient(90deg, #991b1b, #ef4444)',
+                                                    border: 'none', borderRadius: '12px',
+                                                    color: 'white', fontWeight: 800, fontSize: '0.88rem',
+                                                    cursor: 'pointer', display: 'flex',
+                                                    alignItems: 'center', justifyContent: 'center', gap: '0.3rem',
+                                                    boxShadow: '0 4px 20px rgba(239,68,68,0.25)',
+                                                    transition: 'all 0.2s',
+                                                    fontFamily: 'Outfit'
+                                                }}
+                                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(239,68,68,0.4)'; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(239,68,68,0.25)'; }}
+                                                >
+                                                    ✕ UNSOLD
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                        {/* ── Undo Last Action Banner ── */}
+                                        {lastAction && (
+                                            <div style={{
+                                                marginTop: '1rem',
+                                                padding: '0.85rem 1.1rem',
+                                                background: 'linear-gradient(90deg, rgba(251,191,36,0.1), rgba(251,191,36,0.04))',
+                                                border: '1px solid rgba(251,191,36,0.45)',
+                                                borderRadius: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                flexWrap: 'wrap',
+                                                gap: '0.6rem',
+                                                animation: 'fadeIn 0.3s ease'
+                                            }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                                    <span style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.8px', color: '#FBBF24', fontWeight: 700 }}>
+                                                        ⚠️ Last Action
+                                                    </span>
+                                                    <span style={{ fontSize: '0.85rem', color: 'white', fontWeight: 600 }}>
+                                                        <strong>{lastAction.name}</strong> &rarr;
+                                                        {lastAction.status === 'sold'
+                                                            ? ` Sold to ${lastAction.teamName} @ Rs ${lastAction.price?.toLocaleString()}`
+                                                            : ' Marked Unsold'}
+                                                    </span>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleUndo(lastAction.id, lastAction.name, true)}
+                                                        style={{
+                                                            padding: '0.55rem 1.1rem',
+                                                            background: 'linear-gradient(90deg, #d97706, #FBBF24)',
+                                                            border: 'none',
+                                                            borderRadius: '9px',
+                                                            color: '#0A1628',
+                                                            fontWeight: 800,
+                                                            fontSize: '0.82rem',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.35rem',
+                                                            boxShadow: '0 2px 12px rgba(251,191,36,0.35)',
+                                                            transition: 'all 0.15s',
+                                                            fontFamily: 'Outfit'
+                                                        }}
+                                                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(251,191,36,0.5)'; }}
+                                                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(251,191,36,0.35)'; }}
+                                                    >
+                                                        ↩ Undo
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setLastAction(null)}
+                                                        title="Dismiss"
+                                                        style={{
+                                                            background: 'rgba(255,255,255,0.06)',
+                                                            border: '1px solid rgba(255,255,255,0.12)',
+                                                            borderRadius: '7px',
+                                                            color: 'rgba(255,255,255,0.4)',
+                                                            fontSize: '0.8rem',
+                                                            padding: '0.4rem 0.6rem',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >✕</button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Downgrade & Re-queue Options */}
+                                        {curPlayer.base_price > 1000 && (
+                                            <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(244,160,28,0.06)', border: '1px solid rgba(244,160,28,0.2)', borderRadius: '12px' }}>
+                                                <div style={{ fontSize: '0.8rem', color: '#F4A01C', fontWeight: 'bold', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                                    No Bids? Downgrade Base Price & Re-queue
+                                                </div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                    {[5000, 4000, 3000, 2500, 2000, 1500, 1000].filter(p => p < curPlayer.base_price).map(p => (
+                                                        <button type="button" key={p} onClick={() => handleDowngrade(p)} style={{
+                                                            padding: '0.5rem 0.75rem',
+                                                            background: 'rgba(244,160,28,0.1)',
+                                                            border: '1px solid rgba(244,160,28,0.4)',
+                                                            borderRadius: '8px',
+                                                            color: '#F4A01C', fontWeight: 600, fontSize: '0.75rem',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.2)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.6)'; }}
+                                                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(244,160,28,0.1)'; e.currentTarget.style.borderColor = 'rgba(244,160,28,0.4)'; }}
+                                                        >
+                                                            Shift to Rs {p.toLocaleString()}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginBottom: '1rem', opacity: 0.5 }}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>All players have been auctioned!</p>
+                                    <p style={{ fontSize: '0.9rem', marginTop: '0.25rem' }}>Upload a new player CSV, or click the Reset button to start again.</p>
+                                </div>
+                            )}
                         </div>{/* end padding wrapper */}
                     </div>
 
@@ -696,6 +769,7 @@ export default function Admin() {
                                             <th>Sold To</th>
                                             <th>Price</th>
                                             <th>Time</th>
+                                            <th>Undo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -714,6 +788,31 @@ export default function Admin() {
                                                 <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                                                     {h.time ? new Date(h.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'}
                                                 </td>
+                                                <td>
+                                                    <button
+                                                        onClick={() => handleUndo(h.player_id, h.player_name)}
+                                                        title={`Undo ${h.player_name}`}
+                                                        style={{
+                                                            background: 'rgba(251,191,36,0.12)',
+                                                            border: '1px solid rgba(251,191,36,0.4)',
+                                                            borderRadius: '7px',
+                                                            color: '#FBBF24',
+                                                            fontWeight: 700,
+                                                            fontSize: '0.72rem',
+                                                            padding: '0.3rem 0.65rem',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.3rem',
+                                                            transition: 'all 0.15s',
+                                                            whiteSpace: 'nowrap'
+                                                        }}
+                                                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,191,36,0.25)'; e.currentTarget.style.borderColor = 'rgba(251,191,36,0.7)'; }}
+                                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,191,36,0.12)'; e.currentTarget.style.borderColor = 'rgba(251,191,36,0.4)'; }}
+                                                    >
+                                                        ↩ Undo
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -725,7 +824,7 @@ export default function Admin() {
 
                 {/* RIGHT SIDE: Upcoming Player Queue & CSV File Upload */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    
+
                     {/* Player Queue Card */}
                     <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <img src="/assets/cricket_players_queue_1780909303760.png" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '12px', marginBottom: '1rem', border: '1px solid var(--border)' }} alt="Queue" />
@@ -738,8 +837,8 @@ export default function Admin() {
                             {availablePlayers.map((p, index) => {
                                 const isCurrent = curPlayer && curPlayer.id === p.id;
                                 return (
-                                    <div 
-                                        key={p.id} 
+                                    <div
+                                        key={p.id}
                                         className={`queue-item ${isCurrent ? 'active' : ''}`}
                                         onClick={() => setSelectedPlayerId(p.id)}
                                     >
@@ -778,8 +877,8 @@ export default function Admin() {
                         </p>
 
                         <form onSubmit={handleCsvUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <input 
-                                type="file" 
+                            <input
+                                type="file"
                                 accept=".csv"
                                 onChange={e => setCsvFile(e.target.files[0])}
                                 required
@@ -789,14 +888,14 @@ export default function Admin() {
                                 Upload and Queue Players
                             </button>
                         </form>
-                        
+
                         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                            <button 
-                                onClick={handleDeleteAllPlayers} 
-                                className="btn btn-danger" 
+                            <button
+                                onClick={handleDeleteAllPlayers}
+                                className="btn btn-danger"
                                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                             >
-                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 Delete All Players
                             </button>
                             <p className="text-muted" style={{ fontSize: '0.75rem', marginTop: '0.5rem', textAlign: 'center' }}>
@@ -868,7 +967,7 @@ export default function Admin() {
                                     <h3 style={{ fontSize: '1.2rem', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>
                                         {t.name}
                                     </h3>
-                                    
+
                                     <div style={{ marginTop: '0.75rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px' }}>
                                         <div className="flex-between" style={{ fontSize: '0.85rem' }}>
                                             <span style={{ color: 'var(--text-muted)' }}>Purse Left:</span>
@@ -877,8 +976,8 @@ export default function Admin() {
                                             </strong>
                                         </div>
                                         <div className="flex-between" style={{ fontSize: '0.75rem', marginTop: '0.35rem', color: 'var(--text-muted)' }}>
-                                            <span>Spent: <span style={{color:'white'}}>Rs {spent?.toLocaleString()}</span></span>
-                                            <span>Total: <span style={{color:'white'}}>Rs {t.total_budget?.toLocaleString()}</span></span>
+                                            <span>Spent: <span style={{ color: 'white' }}>Rs {spent?.toLocaleString()}</span></span>
+                                            <span>Total: <span style={{ color: 'white' }}>Rs {t.total_budget?.toLocaleString()}</span></span>
                                         </div>
                                         <div className="budget-bar" style={{ marginTop: '0.5rem', height: '6px' }}>
                                             <div className="budget-fill" style={{ width: `${spentPercent}%`, background: spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)', boxShadow: `0 0 8px ${spentPercent > 90 ? 'var(--danger)' : 'var(--secondary)'}` }}></div>
@@ -940,7 +1039,7 @@ export default function Admin() {
                                             <span>Squad Players</span>
                                             <span style={{ color: 'var(--accent)' }}>{squad.length + (t.captain_name ? 1 : 0)} / 15</span>
                                         </div>
-                                        
+
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                                             {t.captain_name && (
                                                 <div className="squad-member-animated flex-between" style={{ borderLeft: '3px solid var(--accent)' }}>
@@ -964,9 +1063,9 @@ export default function Admin() {
                                                 <div key={p.id} className="squad-member-animated flex-between" style={{ animationDelay: `${idx * 0.05}s` }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
                                                         <span className="role-icon">
-                                                            {p.role.toLowerCase().includes('bat') ? '🏏' : 
-                                                             p.role.toLowerCase().includes('bowl') ? '🎯' : 
-                                                             p.role.toLowerCase().includes('keep') ? '🧤' : '⚡'}
+                                                            {p.role.toLowerCase().includes('bat') ? '🏏' :
+                                                                p.role.toLowerCase().includes('bowl') ? '🎯' :
+                                                                    p.role.toLowerCase().includes('keep') ? '🧤' : '⚡'}
                                                         </span>
                                                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '110px', fontSize: '0.85rem', color: '#e2e8f0' }}>
                                                             {p.name}

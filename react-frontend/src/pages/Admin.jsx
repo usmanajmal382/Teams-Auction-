@@ -58,14 +58,17 @@ export default function Admin() {
     }, [navigate]);
 
     // Determine current player up for auction - sorted by base_price DESC, then id ASC
-    const availablePlayers = players
+    const sortFn = (a, b) => {
+        if (b.base_price !== a.base_price) return b.base_price - a.base_price;
+        return a.id - b.id;
+    };
+    // Full original queue (all non-retained) — used to compute stable position numbers
+    const allPlayersSortedQueue = [...players]
+        .filter(p => p.status !== 'retained')
+        .sort(sortFn);
+    const availablePlayers = [...players]
         .filter(p => p.status === 'available')
-        .sort((a, b) => {
-            if (b.base_price !== a.base_price) {
-                return b.base_price - a.base_price;
-            }
-            return a.id - b.id;
-        });
+        .sort(sortFn);
     const curPlayer = availablePlayers.find(p => p.id === selectedPlayerId) || availablePlayers[0] || null;
 
     // Reset inputs when active player changes
@@ -846,8 +849,9 @@ export default function Admin() {
                         </p>
 
                         <div className="auction-queue-list" style={{ flex: 1, maxHeight: '420px' }}>
-                            {availablePlayers.map((p, index) => {
+                            {availablePlayers.map((p) => {
                                 const isCurrent = curPlayer && curPlayer.id === p.id;
+                                const originalPos = allPlayersSortedQueue.findIndex(op => op.id === p.id) + 1;
                                 return (
                                     <div
                                         key={p.id}
@@ -855,7 +859,7 @@ export default function Admin() {
                                         onClick={() => setSelectedPlayerId(p.id)}
                                     >
                                         <div>
-                                            <strong style={{ color: 'white' }}>{index + 1}. {p.name}</strong>
+                                            <strong style={{ color: 'white' }}>{originalPos}. {p.name}</strong>
                                             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
                                                 {p.role} {p.age ? `• Age ${p.age}` : ''}
                                             </div>

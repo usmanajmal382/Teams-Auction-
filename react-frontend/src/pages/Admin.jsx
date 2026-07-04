@@ -166,7 +166,7 @@ export default function Admin() {
     };
 
     const handleUndo = async (playerId, playerName) => {
-        if (!window.confirm(`"${playerName}" ko wapas auction queue mein bhejna chahte hain?`)) return;
+        if (!window.confirm(`Are you sure you want to undo the last action for "${playerName}"? They will be returned to the auction queue.`)) return;
         try {
             const res = await apiCall(`/auction/undo/${playerId}`, { method: 'POST' });
             setLastAction(null);

@@ -165,6 +165,18 @@ export default function Admin() {
         }
     };
 
+    const handleUndo = async (playerId, playerName) => {
+        if (!window.confirm(`"${playerName}" ko wapas auction queue mein bhejna chahte hain?`)) return;
+        try {
+            const res = await apiCall(`/auction/undo/${playerId}`, { method: 'POST' });
+            setLastAction(null);
+            await loadData();
+            alert(res.message);
+        } catch (err) {
+            alert('Undo failed: ' + err.message);
+        }
+    };
+
     const handlePhotoUpload = async (e) => {
         e.preventDefault();
         if (!curPlayer || !photoFile) return;

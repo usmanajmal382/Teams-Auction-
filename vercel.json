@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "api/index.py",
@@ -14,15 +15,15 @@
   ],
   "routes": [
     {
-      "src": "/(login|register|me|players|teams|auction|bid|chatbot|chat|uploads)(.*)",
-      "dest": "api/index.py"
+      "src": "/(login|register|me|players|teams|auction|bid|chatbot|chat|uploads|ws)(.*)",
+      "dest": "/api/index.py"
     },
     {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "react-frontend/$1"
+      "dest": "/react-frontend/$1"
     }
   ]
 }

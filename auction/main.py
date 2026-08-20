@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from .models import models, database
-from .routers import auth, players, teams, auction
+from .routers import auth, players, teams, auction, chatbot
 import os
 
 from sqlalchemy import text
@@ -76,6 +76,7 @@ app.include_router(auth.router)
 app.include_router(players.router)
 app.include_router(teams.router)
 app.include_router(auction.router)
+app.include_router(chatbot.router)
 
 # Mount uploads directory
 os.makedirs("uploads", exist_ok=True)

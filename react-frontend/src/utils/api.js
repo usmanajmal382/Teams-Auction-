@@ -1,8 +1,21 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const WS_BASE = import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace('https://', 'wss://').replace('http://', 'ws://')
-    : 'ws://127.0.0.1:8000';
-export const WS_URL = `${WS_BASE}/ws/auction`;
+const defaultApiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' 
+    ? '' 
+    : 'http://127.0.0.1:8000';
+
+export const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
+
+const getWsUrl = () => {
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+    }
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        return `${protocol}${window.location.host}`;
+    }
+    return 'ws://127.0.0.1:8000';
+};
+
+export const WS_URL = `${getWsUrl()}/ws/auction`;
 
 export async function apiCall(endpoint, options = {}) {
     const token = localStorage.getItem('token');

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminSetup from './pages/AdminSetup';
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/players" element={<Players />} />
                 <Route path="/teams" element={<Teams />} />
             </Routes>
+            <ChatWidget />
         </BrowserRouter>
     );
 }

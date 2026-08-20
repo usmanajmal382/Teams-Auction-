@@ -272,6 +272,18 @@ def manual_sell(player_id: int, req: ManualSellRequest, db: Session = Depends(da
     team = db.query(models.Team).filter(models.Team.id == req.team_id).first()
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
+
+    # Squad size check — max 15 players (captain is free and not counted here)
+    MAX_SQUAD_SIZE = 15
+    current_squad_count = db.query(models.Player).filter(
+        models.Player.sold_to_team_id == team.id,
+        models.Player.status.in_(["sold", "retained"])
+    ).count()
+    if current_squad_count >= MAX_SQUAD_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{team.name} already has {current_squad_count} players (max {MAX_SQUAD_SIZE}). Cannot add more."
+        )
         
     if req.final_price < player.base_price:
         raise HTTPException(status_code=400, detail=f"Final price must be at least the base price of {player.base_price}")
